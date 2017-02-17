@@ -6,18 +6,16 @@
 (def ^:dynamic *oauth-api* "https://api.twitter.com")
 (def ^:dynamic *rest-upload-api* "https://upload.twitter.com/1")
 
-(defn clean-resource-path
-  "convert groups of symbols to single dashes and drop trailing dashes"
-  [resource-path]
-  (-> resource-path
-      (string/replace #"[^a-zA-Z]+" "-")
-      (string/replace #"-$" "")))
-
 (defmacro def-twitter-restful-method
   {:requires [#'def-twitter-method]}
   [http-method resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
-        fn-name (-> resource-path clean-resource-path symbol)]
+        fn-name (-> resource-path
+                    ; convert groups of symbols to single dashes
+                    (string/replace #"[^a-zA-Z]+" "-")
+                    ; drop trailing dashes
+                    (string/replace #"-$" "")
+                    (symbol))]
     `(def-twitter-method ~fn-name ~http-method ~json-path :api ~*rest-api* :sync true ~@rest)))
 
 ;; Accounts

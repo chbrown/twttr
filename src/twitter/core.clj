@@ -34,7 +34,7 @@
   "read an error response into a string error message"
   [response]
   (let [status-code (:code (http/status response))
-        body (json/read-json (http/string response))
+        body (json/read-str (http/string response) :key-fn keyword)
         desc (or (:message (first (:errors body))) (:error body))
         code (or (:code (first (:errors body))) status-code)
         req (:request body)]
@@ -62,14 +62,10 @@
     (throw (Exception. (format-twitter-error-message response)))))
 
 (defn execute-api-request
-  "calls the HTTP method on the resource specified in the uri, signing with oauth in the headers
-   you can supply args for async.http.client (e.g. :query, :body, :headers etc).
-
-   takes uri, HTTP method and optional args and returns the final uri and http parameters for the subsequent call.
-   Note that the params are transformed (from lispy -'s to x-header-style _'s) and added to the query. So :params
-   could be {:screen-name 'blah'} and it be merged into :query as {:screen_name 'blah'}. The uri has the params
-   substituted in (so {:id} in the uri will use the :id in the :params map). Also, the oauth headers are added
-   if required."
+  "Creates an HTTP request, signing with OAuth as directed by the :oauth-creds option.
+  Note that the params are transformed (from lispy -'s to x-header-style _'s) and added to the query.
+  So :params could be {:screen-name 'twitterapi'} and it be merged into :query as {:screen_name 'twitterapi'}.
+  The uri has the params substituted in, so '/{:id}' in the uri will result in, e.g., '/123'"
   [http-method uri {:keys [params body query oauth-creds headers client callbacks sync]
                     :or {client @default-client}
                     :as arg-map}]
@@ -86,15 +82,14 @@
 
 (defmacro def-twitter-method
   "Declares a twitter method with the supplied name, HTTP method and relative resource path.
-   As part of the specification, it must have an :api member of the 'rest' list.
-   From these it creates a uri, the api context and relative resource path. The default callbacks that are
-   supplied, determine how to make the call (in terms of the sync/async or single/streaming)"
+  As part of the specification, it must have an :api member of the 'rest' list.
+  From these it creates a uri, the api context and relative resource path."
   [fn-name default-http-method resource-path & rest]
   (let [rest-map (apply sorted-map rest)]
     `(defn ~fn-name
        [& {:as args#}]
        (let [arg-map# (merge ~rest-map args#)
-             api-prefix# (or (:api arg-map#) (throw (Exception. "must include an ':api' entry in the params")))
+             api-prefix# (or (:api arg-map#) (throw (Exception. "must include an :api entry in the params")))
              http-method# (or (:http-method args#) ~default-http-method)
              ; makes a uri from a supplied protocol, site, version and resource-path
              uri# (str api-prefix# "/" ~resource-path)]

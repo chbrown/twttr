@@ -9,6 +9,7 @@
             [oauth.signature :refer [url-encode]]))
 
 (defn- request-app-only-token
+  "Request a 'Bearer' token from Twitter for app-only authentication"
   [consumer-key consumer-secret]
   (let [auth-string (string/join ":" (map url-encode [consumer-key consumer-secret]))
         req (prepare-request :post "https://api.twitter.com/oauth2/token"
