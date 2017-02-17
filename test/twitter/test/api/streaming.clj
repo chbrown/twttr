@@ -1,8 +1,7 @@
 (ns twitter.test.api.streaming
   (:require [clojure.test :refer :all]
             [http.async.client :as http]
-            [twitter.api.streaming :refer [statuses-filter
-                                           statuses-sample user-stream]]
+            [twitter.api.streaming :refer :all]
             [twitter.test-utils :refer [user-creds]]))
 
 (defmacro is-async-200

@@ -1,20 +1,17 @@
 (ns twitter.test-utils
   (:require [clojure.test :refer :all]
-            [twitter.api.restful :refer [users-show]]
-            [twitter.oauth :refer [make-oauth-creds]]))
+            [twitter.oauth :refer [->UserCredentials ->AppCredentials]]))
 
 (def ^:private env-credentials
   (map #(System/getenv %) ["CONSUMER_KEY" "CONSUMER_SECRET" "ACCESS_TOKEN" "ACCESS_TOKEN_SECRET"]))
 
-(def ^:dynamic *user-screen-name* (System/getenv "SCREEN_NAME"))
-
 (def user-creds
   (let [[consumer-key consumer-secret user-token user-token-secret] env-credentials]
-    (make-oauth-creds consumer-key consumer-secret user-token user-token-secret)))
+    (->UserCredentials consumer-key consumer-secret user-token user-token-secret)))
 
 (def app-creds
   (let [[consumer-key consumer-secret] env-credentials]
-    (make-oauth-creds consumer-key consumer-secret)))
+    (->AppCredentials consumer-key consumer-secret)))
 
 (deftest credentials-available
   (let [[consumer-key consumer-secret user-token user-token-secret] env-credentials]
@@ -35,20 +32,6 @@
   (if (some #{:app-only} args)
     `(is-http-code 200 ~fn-name ~app-creds ~@(remove #{:app-only} args))
     `(is-http-code 200 ~fn-name ~user-creds ~@args)))
-
-(defn get-user-id
-  "gets the id of the supplied screen name"
-  [screen-name]
-  (get-in (users-show :oauth-creds user-creds :params {:screen-name screen-name})
-          [:body :id]))
-
-(defn get-current-status-id
-  "gets the id of the current status for the supplied screen name"
-  [screen-name]
-  (let [result (users-show :oauth-creds user-creds :params {:screen-name screen-name})
-        status-id (get-in result [:body :status :id])]
-    (assert status-id "could not retrieve the user's profile in 'show-user'")
-    status-id))
 
 (defn poll-until-no-error
   "repeatedly tries the poll instruction, for a maximum time, or until the error disappears"

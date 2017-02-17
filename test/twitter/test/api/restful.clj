@@ -1,10 +1,10 @@
 (ns twitter.test.api.restful
   (:require [clojure.test :refer :all]
             [twitter.api.restful :refer :all]
-            [twitter.test-utils :refer [*user-screen-name*
-                                        get-current-status-id
-                                        get-user-id is-200 user-creds
+            [twitter.test-utils :refer [is-200 user-creds
                                         with-setup-poll-teardown]]))
+
+(def current-user (delay (:body (account-verify-credentials :oauth-creds user-creds))))
 
 (deftest test-account
   (is-200 account-verify-credentials)
@@ -23,8 +23,8 @@
   (is-200 statuses-retweets-of-me))
 
 (deftest test-statuses
-  (let [status-id (get-current-status-id *user-screen-name*)]
-    (is-200 statuses-lookup :params {:id "20,432656548536401920"})
+  (is-200 statuses-lookup :params {:id "20,432656548536401920"})
+  (let [status-id (get-in @current-user [:status :id])]
     (is-200 statuses-show-id :params {:id status-id})
     (is-200 statuses-show-id :params {:id status-id} :app-only)
     (is-200 statuses-retweets-id :params {:id status-id})
@@ -35,7 +35,7 @@
   (is-200 search-tweets :params {:q "clojure"} :app-only))
 
 (deftest test-user
-  (let [user-id (get-user-id *user-screen-name*)]
+  (let [user-id (:id @current-user)]
     (is-200 users-show :params {:user-id user-id})
     (is-200 users-show :params {:user-id user-id} :app-only)
     (is-200 users-lookup :params {:user-id user-id})
@@ -43,10 +43,7 @@
     (is-200 users-suggestions :params {:q "john smith"})
     (is-200 users-suggestions :params {:q "john smith"} :app-only)
     (is-200 users-suggestions-slug :params {:slug "sports"})
-    (is-200 users-suggestions-slug-members :params {:slug "sports"})
-    ;; The following test seems to be broken as of 23/12/14
-    ;;(is-200 users-contributees :params {:user-id user-id})
-))
+    (is-200 users-suggestions-slug-members :params {:slug "sports"})))
 
 (deftest test-trends
   (is-200 trends-place :params {:id 1})
@@ -85,7 +82,7 @@
 (deftest test-list-members
   (with-list list-id
     (is-200 lists-members :params {:list-id list-id})
-    (is (thrown? Exception (lists-members-show :params {:list-id list-id :screen-name *user-screen-name*})))))
+    (is (thrown? Exception (lists-members-show :params {:list-id list-id :screen-name (:screen_name @current-user)})))))
 
 (deftest test-list-subscribers
   (with-list list-id
@@ -93,15 +90,15 @@
 
 (deftest test-list-subscribers-show
   (with-list list-id
-    (is (thrown? Exception (lists-subscribers-show :params {:list-id list-id :screen-name *user-screen-name*})))))
+    (is (thrown? Exception (lists-subscribers-show :params {:list-id list-id :screen-name (:screen_name @current-user)})))))
 
 (deftest test-direct-messages
   (is-200 direct-messages)
   (is-200 direct-messages-sent))
 
 (deftest test-friendship
-  (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"})
-  (is-200 friendships-show :params {:source-screen-name *user-screen-name* :target-screen-name "AdamJWynne"} :app-only)
+  (is-200 friendships-show :params {:source-screen-name (:screen_name @current-user) :target-screen-name "AdamJWynne"})
+  (is-200 friendships-show :params {:source-screen-name (:screen_name @current-user) :target-screen-name "AdamJWynne"} :app-only)
   (is-200 friendships-lookup :params {:screen-name "peat,AdamJWynne"})
   (is-200 friendships-incoming)
   (is-200 friendships-outgoing))
@@ -113,7 +110,7 @@
   (is-200 followers-list))
 
 (deftest test-favourites
-  (let [status-id (get-current-status-id *user-screen-name*)]
+  (let [status-id (get-in @current-user [:status :id])]
     (is-200 favorites-create :params {:id status-id})
     (is-200 favorites-destroy :params {:id status-id})
     (is-200 favorites-list)))

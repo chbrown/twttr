@@ -1,6 +1,6 @@
 (ns twitter.test.api.search
   (:require [clojure.test :refer :all]
-            [twitter.api.search :refer [search]]
+            [twitter.api.search :refer :all]
             [twitter.test-utils :refer [is-200]]))
 
 (deftest test-search
