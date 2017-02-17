@@ -1,11 +1,12 @@
-(ns twitter.api.test.restful
+(ns twitter.test.api.restful
   (:require [clojure.test :refer :all]
             [twitter.api.restful :refer :all]
-            [twitter.test-utils.core :refer [get-current-status-id
-                                             get-user-id is-200
-                                             with-setup-poll-teardown]]
-            [twitter.test.creds :refer [*user-screen-name*
-                                        make-test-creds]]))
+            [twitter.test-utils :refer [*user-screen-name*
+                                        user-creds
+                                        app-creds
+                                        get-current-status-id
+                                        get-user-id is-200
+                                        with-setup-poll-teardown]]))
 
 (deftest test-account
   (is-200 account-verify-credentials)
@@ -57,23 +58,31 @@
   (is-200 trends-closest :params {:lat 37.781157 :long -122.400612831116})
   (is-200 trends-closest :params {:lat 37.781157 :long -122.400612831116} :app-only))
 
+(deftest test-lists-list
+  (is-200 lists-list))
+
+(deftest test-lists-memberships
+  (is-200 lists-memberships))
+
+(deftest test-lists-subscriptions
+  (is-200 lists-subscriptions))
+
+(deftest test-lists-ownerships
+  (is-200 lists-ownerships))
+
 (defmacro with-list
   "create a list and then removes it"
-  [list-id-name & body]
+  [var-name & body]
   `(with-setup-poll-teardown
-     ~list-id-name
-     (get-in (~lists-create :oauth-creds (~make-test-creds) :params {:name "mytestlistblumblum"})
-             [:body :id])
-     (~lists-statuses :oauth-creds (~make-test-creds) :params {:list-id ~list-id-name})
-     (~lists-destroy :oauth-creds (~make-test-creds) :params {:list-id ~list-id-name})
+     ~var-name
+     (get-in (~lists-create :oauth-creds ~user-creds :params {:name "mytestlistblumblum"}) [:body :id])
+     (~lists-statuses :oauth-creds ~user-creds :params {:list-id ~var-name})
+     (~lists-destroy :oauth-creds ~user-creds :params {:list-id ~var-name})
      ~@body))
 
-(deftest test-lists
-  (is-200 lists-list)
-  (is-200 lists-memberships)
-  (is-200 lists-subscriptions)
-  (is-200 lists-ownerships)
-  (with-list list-id (is-200 lists-statuses :params {:list-id list-id})))
+(deftest test-lists-statuses
+  (with-list list-id
+    (is-200 lists-statuses :params {:list-id list-id})))
 
 (deftest test-list-members
   (with-list list-id
@@ -82,7 +91,10 @@
 
 (deftest test-list-subscribers
   (with-list list-id
-    (is-200 lists-subscribers :params {:list-id list-id})
+    (is-200 lists-subscribers :params {:list-id list-id})))
+
+(deftest test-list-subscribers-show
+  (with-list list-id
     (is (thrown? Exception (lists-subscribers-show :params {:list-id list-id :screen-name *user-screen-name*})))))
 
 (deftest test-direct-messages
@@ -113,10 +125,10 @@
   [search-id-name & body]
   `(with-setup-poll-teardown
      ~search-id-name
-     (get-in (saved-searches-create :oauth-creds (~make-test-creds) :params {:query "sandwiches"})
+     (get-in (saved-searches-create :oauth-creds ~user-creds :params {:query "sandwiches"})
              [:body :id])
-     (saved-searches-show-id :oauth-creds (~make-test-creds) :params {:id ~search-id-name})
-     (saved-searches-destroy-id :oauth-creds (~make-test-creds) :params {:id ~search-id-name})
+     (saved-searches-show-id :oauth-creds ~user-creds :params {:id ~search-id-name})
+     (saved-searches-destroy-id :oauth-creds ~user-creds :params {:id ~search-id-name})
      ~@body))
 
 (deftest test-saved-searches

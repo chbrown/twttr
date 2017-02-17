@@ -1,28 +1,18 @@
 (ns twitter.oauth
-  (:require [clojure.data.codec.base64 :as b64]
-            [http.async.client :refer [create-client]]
-            [http.async.client.request :as req]
+  (:require [clojure.data.codec.base64 :as base64]
+            [clojure.data.json :as json]
+            [http.async.client :as http]
+            [http.async.client.request :refer [prepare-request execute-request]]
             [oauth.client :as oa]
-            [oauth.signature :as oas]
-            [twitter.callbacks :refer [callbacks-sync-single-default]]
-            [twitter.request :refer [execute-request-callbacks]]))
+            [oauth.signature :as oas]))
 
-(defrecord OauthCredentials [consumer
-                             #^String access-token
-                             #^String access-token-secret])
+(defrecord OauthCredentials [consumer access-token access-token-secret])
 
 (defn sign-query
   "takes oauth credentials and returns a map of the signing parameters"
-  [#^OauthCredentials oauth-creds verb uri & {:keys [query]}]
-  (if oauth-creds
-    (into (sorted-map)
-          (merge {:realm "Twitter API"}
-                 (oa/credentials (:consumer oauth-creds)
-                                 (:access-token oauth-creds)
-                                 (:access-token-secret oauth-creds)
-                                 verb
-                                 uri
-                                 query)))))
+  [{:keys [consumer access-token access-token-secret]} http-method uri & {:keys [query]}]
+  (merge {:realm "Twitter API"}
+         (oa/credentials consumer access-token access-token-secret http-method uri query)))
 
 (defn oauth-header-string
   "Creates the string for the oauth header's 'Authorization' value,
@@ -42,21 +32,23 @@
   encodes them so that they can be submitted to Twitter in exchange
   for an application-only token."
   [consumer-key consumer-secret]
-  (let [concat-keys (str (oas/url-encode consumer-key) ":" (oas/url-encode consumer-secret))]
-    (-> (.getBytes concat-keys)
-        b64/encode
-        (String. "UTF-8"))))
+  (-> (str (oas/url-encode consumer-key) ":" (oas/url-encode consumer-secret))
+      (.getBytes)
+      (base64/encode)
+      (String. "UTF-8")))
 
 (defn request-app-only-token
   [consumer-key consumer-secret]
   (let [auth-string (str "Basic " (encode-app-only-key consumer-key consumer-secret))
         content-type "application/x-www-form-urlencoded;charset=UTF-8"
-        req (req/prepare-request :post, "https://api.twitter.com/oauth2/token"
-                                 :headers {"Authorization" auth-string
-                                           "Content-Type" content-type}
-                                 :body "grant_type=client_credentials")
-        client (create-client :follow-redirects false :request-timeout -1)
-        {:keys [status body]} (execute-request-callbacks client req (callbacks-sync-single-default))]
+        req (prepare-request :post "https://api.twitter.com/oauth2/token"
+                             :headers {:Authorization auth-string
+                                       :Content-Type content-type}
+                             :body "grant_type=client_credentials")
+        client (http/create-client :follow-redirects false :request-timeout -1)
+        response (http/await (execute-request client req))
+        status (http/status response)
+        body (json/read-str (http/string response) :key-fn keyword)]
     (if (= (:code status) 200)
       {:bearer (:access_token body)}
       (throw (Exception. (str "Failed to retrieve application-only due to an unknown error: " body))))))

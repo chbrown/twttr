@@ -1,18 +1,24 @@
 (ns twitter.api.restful
-  (:require [twitter.api :refer [clean-resource-path make-api-context]]
-            [twitter.callbacks :refer [get-default-callbacks]]
+  (:require [clojure.string :as string]
             [twitter.core :refer [def-twitter-method]]))
 
-(def ^:dynamic *rest-api* (make-api-context "https" "api.twitter.com" "1.1"))
-(def ^:dynamic *oauth-api* (make-api-context "https" "api.twitter.com"))
-(def ^:dynamic *rest-upload-api* (make-api-context "https" "upload.twitter.com" 1))
+(def ^:dynamic *rest-api* "https://api.twitter.com/1.1")
+(def ^:dynamic *oauth-api* "https://api.twitter.com")
+(def ^:dynamic *rest-upload-api* "https://upload.twitter.com/1")
+
+(defn clean-resource-path
+  "convert groups of symbols to single dashes and drop trailing dashes"
+  [resource-path]
+  (-> resource-path
+      (string/replace #"[^a-zA-Z]+" "-")
+      (string/replace #"-$" "")))
 
 (defmacro def-twitter-restful-method
-  {:requires [#'def-twitter-method get-default-callbacks]}
-  [verb resource-path & rest]
+  {:requires [#'def-twitter-method]}
+  [http-method resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
         fn-name (-> resource-path clean-resource-path symbol)]
-    `(def-twitter-method ~fn-name ~verb ~json-path :api ~*rest-api* :callbacks (get-default-callbacks :sync :single) ~@rest)))
+    `(def-twitter-method ~fn-name ~http-method ~json-path :api ~*rest-api* :sync true ~@rest)))
 
 ;; Accounts
 (def-twitter-restful-method :get  "account/settings")
@@ -47,12 +53,6 @@
 (def-twitter-restful-method :post "statuses/update")
 (def-twitter-restful-method :post "statuses/retweet/{:id}")
 (def-twitter-restful-method :get  "statuses/oembed")
-; Supply the status and file to the :body as a sequence using the functions 'file-body-part' and 'status-body-part'
-; i.e. :body [(file-body-part "/pics/mypic.jpg") (status-body-part "hello world")]
-; for an example, see twitter.test.file-upload
-(def-twitter-restful-method :post "statuses/update_with_media"
-                            :api *rest-api*
-                            :headers {:content-type "multipart/form-data"})
 
 ;; Search
 (def-twitter-restful-method :get "search/tweets")
