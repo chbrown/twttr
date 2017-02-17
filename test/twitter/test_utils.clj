@@ -9,17 +9,17 @@
 (def ^:dynamic *user-screen-name* (System/getenv "SCREEN_NAME"))
 
 (def user-creds
-  (let [[app-key app-secret user-token user-token-secret] env-credentials]
-    (make-oauth-creds app-key app-secret user-token user-token-secret)))
+  (let [[consumer-key consumer-secret user-token user-token-secret] env-credentials]
+    (make-oauth-creds consumer-key consumer-secret user-token user-token-secret)))
 
 (def app-creds
-  (let [[app-key app-secret] env-credentials]
-    (make-oauth-creds app-key app-secret)))
+  (let [[consumer-key consumer-secret] env-credentials]
+    (make-oauth-creds consumer-key consumer-secret)))
 
 (deftest credentials-available
-  (let [[app-key app-secret user-token user-token-secret] env-credentials]
-    (is (some? app-key))
-    (is (some? app-secret))
+  (let [[consumer-key consumer-secret user-token user-token-secret] env-credentials]
+    (is (some? consumer-key))
+    (is (some? consumer-secret))
     (is (some? user-token))
     (is (some? user-token-secret))))
 

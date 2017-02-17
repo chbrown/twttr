@@ -1,8 +1,9 @@
 (ns twitter.core
-  (:require [clojure.string :as string]
-            [clojure.data.json :as json]
+  (:require [clojure.data.json :as json]
+            [clojure.string :as string]
             [http.async.client :as http]
-            [http.async.client.request :refer [prepare-request execute-request]]
+            [http.async.client.request :refer [execute-request
+                                               prepare-request]]
             [twitter.oauth :refer [auth-header]]))
 
 (defn- map-kv

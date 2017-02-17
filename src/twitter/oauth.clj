@@ -3,7 +3,8 @@
             [clojure.data.json :as json]
             [clojure.string :as string]
             [http.async.client :as http]
-            [http.async.client.request :refer [prepare-request execute-request]]
+            [http.async.client.request :refer [execute-request
+                                               prepare-request]]
             [oauth.client :as oauth]
             [oauth.signature :refer [url-encode]]))
 
@@ -30,8 +31,7 @@
 (defrecord AppCredentials [consumer-key consumer-secret]
   Credentials
   (auth-header [_ _ _ _]
-    (->> (get-app-only-token consumer-key consumer-secret)
-         (str "Bearer "))))
+    (str "Bearer " (get-app-only-token consumer-key consumer-secret))))
 
 (defrecord UserCredentials [consumer-key consumer-secret user-token user-token-secret]
   Credentials

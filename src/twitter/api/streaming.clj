@@ -1,5 +1,6 @@
 (ns twitter.api.streaming
-  (:require [twitter.core :refer [def-twitter-method format-twitter-error-message]]))
+  (:require [twitter.core :refer [def-twitter-method
+                                  format-twitter-error-message]]))
 
 (def callbacks {:completed (fn [response] (throw (Exception. "Unexpected completion of stream")) [true :continue])
                 :error (fn [response throwable] (throw (Exception. (format-twitter-error-message response))) throwable)})

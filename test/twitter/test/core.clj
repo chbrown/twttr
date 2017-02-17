@@ -1,6 +1,5 @@
 (ns twitter.test.core
-  (:require [clojure.test :refer :all]
-            [twitter.core]))
+  (:require [clojure.test :refer :all]))
 
 (deftest test-map-kv
   (is (= {"a" 0, "b" 1, "c" 2, "d" 3} (#'twitter.core/map-kv {:a 0 :b 1 :c 2 :d 3} name identity)))
