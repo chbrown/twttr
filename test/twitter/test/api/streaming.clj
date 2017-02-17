@@ -1,10 +1,9 @@
 (ns twitter.test.api.streaming
   (:require [clojure.test :refer :all]
             [http.async.client :as http]
-            [twitter.test-utils :refer [user-creds]]
             [twitter.api.streaming :refer [statuses-filter
-                                           statuses-sample
-                                           user-stream]]))
+                                           statuses-sample user-stream]]
+            [twitter.test-utils :refer [user-creds]]))
 
 (defmacro is-async-200
   "checks to see if the response is HTTP return code 200, and then cancels it"

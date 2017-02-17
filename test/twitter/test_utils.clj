@@ -1,20 +1,17 @@
 (ns twitter.test-utils
   (:require [clojure.test :refer :all]
-            [http.async.client :as http]
-            [twitter.oauth :refer [make-oauth-creds]]
-            [twitter.api.restful :refer [users-show]]))
+            [twitter.api.restful :refer [users-show]]
+            [twitter.oauth :refer [make-oauth-creds]]))
 
 (def ^:private env-credentials
   (map #(System/getenv %) ["CONSUMER_KEY" "CONSUMER_SECRET" "ACCESS_TOKEN" "ACCESS_TOKEN_SECRET"]))
 
 (def ^:dynamic *user-screen-name* (System/getenv "SCREEN_NAME"))
 
-; "makes an Oauth structure that uses an app's credentials and a users's credentials"
 (def user-creds
   (let [[app-key app-secret user-token user-token-secret] env-credentials]
     (make-oauth-creds app-key app-secret user-token user-token-secret)))
 
-; "makes an Oauth structure that uses only an app's credentials"
 (def app-creds
   (let [[app-key app-secret] env-credentials]
     (make-oauth-creds app-key app-secret)))
@@ -27,25 +24,17 @@
     (is (some? user-token-secret))))
 
 (defmacro is-http-code
-  "checks to see if the response is a specific HTTP return code"
+  "checks to see if the response to an authenticated request is a specific HTTP return code"
   {:requires [#'is]}
-  [code fn-name & args]
-  `(is (= ~code (get-in (~fn-name :oauth-creds ~user-creds ~@args) [:status :code]))))
-
-(defmacro is-200-with-app-only
-  "checks to see if the response to a request using application-only
-  authentication is a specific HTTP return code"
-  {:requires [#'is]}
-  [fn-name & args]
-  `(is (= 200 (get-in (~fn-name :oauth-creds ~app-creds ~@args) [:status :code]))))
+  [code fn-name creds & args]
+  `(is (= ~code (get-in (~fn-name :oauth-creds ~creds ~@args) [:status :code]))))
 
 (defmacro is-200
   "checks to see if the response is HTTP 200"
   [fn-name & args]
   (if (some #{:app-only} args)
-    (let [args# (remove #{:app-only} args)]
-      `(is-200-with-app-only ~fn-name ~@args#))
-    `(is-http-code 200 ~fn-name ~@args)))
+    `(is-http-code 200 ~fn-name ~app-creds ~@(remove #{:app-only} args))
+    `(is-http-code 200 ~fn-name ~user-creds ~@args)))
 
 (defn get-user-id
   "gets the id of the supplied screen name"

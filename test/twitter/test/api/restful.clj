@@ -2,10 +2,8 @@
   (:require [clojure.test :refer :all]
             [twitter.api.restful :refer :all]
             [twitter.test-utils :refer [*user-screen-name*
-                                        user-creds
-                                        app-creds
                                         get-current-status-id
-                                        get-user-id is-200
+                                        get-user-id is-200 user-creds
                                         with-setup-poll-teardown]]))
 
 (deftest test-account

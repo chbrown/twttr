@@ -3,7 +3,7 @@
             [clojure.data.json :as json]
             [http.async.client :as http]
             [http.async.client.request :refer [prepare-request execute-request]]
-            [twitter.oauth :refer [oauth-header-string sign-query]]))
+            [twitter.oauth :refer [auth-header]]))
 
 (defn- map-kv
   "transforms the k/v pairs of a map using a supplied transformation function"
@@ -70,23 +70,17 @@
    substituted in (so {:id} in the uri will use the :id in the :params map). Also, the oauth headers are added
    if required."
   [http-method uri {:keys [params body query oauth-creds headers client callbacks sync]
-                    :or {client @default-client
-                         callbacks {}
-                         sync false}
+                    :or {client @default-client}
                     :as arg-map}]
   (let [params (map-kv params (comp keyword hyphen->underscore name) flatten-to-csv)
         uri (subs-uri uri params)
         query (merge query params)
-        ; request-args (get-request-args http-method uri arg-map)
-        oauth-map (if (contains? oauth-creds :bearer)
-                    oauth-creds ;; no need to sign for app-only auth
-                    (sign-query oauth-creds http-method uri :query query))
         headers (merge headers
-                       (when oauth-map {:Authorization (oauth-header-string oauth-map)})
+                       {:Authorization (auth-header oauth-creds http-method uri query)}
                        (when (vector? body) {:Content-Type "multipart/form-data"}))
         request (prepare-request http-method uri :query query :headers headers :body body)
+        ; other-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :api :callbacks)
         response (apply execute-request client request (apply concat callbacks))]
-        ; other-args (merge (dissoc arg-map :query :headers :body :params :oauth-creds :client :api :callbacks)]
     (if sync (transform-sync-response response) response)))
 
 (defmacro def-twitter-method
