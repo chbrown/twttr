@@ -4,9 +4,9 @@
 
 (def ^:dynamic *rest-api* "https://api.twitter.com/1.1")
 (def ^:dynamic *oauth-api* "https://api.twitter.com")
-(def ^:dynamic *rest-upload-api* "https://upload.twitter.com/1")
 
 (defmacro def-twitter-restful-method
+  "Define a Twitter API call with a synchronous response"
   {:requires [#'def-twitter-method]}
   [http-method resource-path & rest]
   (let [json-path (str resource-path ".json") ; v1.1 is .json only.
@@ -71,9 +71,9 @@
 (def-twitter-restful-method :get "trends/closest")
 
 ;; Oauth
-(def-twitter-restful-method :get  "oauth/authenticate" :api *oauth-api*)
-(def-twitter-restful-method :get  "oauth/authorize" :api *oauth-api*)
-(def-twitter-restful-method :post "oauth/access_token" :api *oauth-api*)
+(def-twitter-restful-method :get  "oauth/authenticate"  :api *oauth-api*)
+(def-twitter-restful-method :get  "oauth/authorize"     :api *oauth-api*)
+(def-twitter-restful-method :post "oauth/access_token"  :api *oauth-api*)
 (def-twitter-restful-method :post "oauth/request_token" :api *oauth-api*)
 
 ;; Lists
