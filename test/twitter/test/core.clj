@@ -1,13 +1,17 @@
 (ns twitter.test.core
-  (:require [clojure.test :refer :all]))
+  (:require [clojure.test :refer :all]
+            [twitter.core :refer [->UserCredentials ->AppCredentials]]))
 
-(deftest test-map-kv
-  (is (= {"a" 0, "b" 1, "c" 2, "d" 3} (#'twitter.core/map-kv {:a 0 :b 1 :c 2 :d 3} name identity)))
-  (is (= {:a 1 :b 2 :c 3 :d 4} (#'twitter.core/map-kv {:a 0 :b 1 :c 2 :d 3} identity inc))))
+(def env-credentials
+  (map #(System/getenv %) ["CONSUMER_KEY" "CONSUMER_SECRET" "ACCESS_TOKEN" "ACCESS_TOKEN_SECRET"]))
 
-(deftest test-sub-uri
-  (is (= (#'twitter.core/subs-uri "http://www.cnn.com/{:version}/{:id}/test.json" {:version 1, :id "my123"})
-         "http://www.cnn.com/1/my123/test.json"))
-  (is (= (#'twitter.core/subs-uri "http://www.cnn.com/nosubs.json" {:version 1, :id "my123"})
-         "http://www.cnn.com/nosubs.json"))
-  (is (thrown? java.lang.AssertionError (#'twitter.core/subs-uri "http://www.cnn.com/{:version}/{:id}/test.json" {:id "my123"}))))
+(deftest credentials-available
+  (let [[consumer-key consumer-secret user-token user-token-secret] env-credentials]
+    (is (some? consumer-key))
+    (is (some? consumer-secret))
+    (is (some? user-token))
+    (is (some? user-token-secret))))
+
+(let [[consumer-key consumer-secret user-token user-token-secret] env-credentials]
+  (def ^:dynamic *user* (->UserCredentials consumer-key consumer-secret user-token user-token-secret))
+  (def ^:dynamic *app* (->AppCredentials consumer-key consumer-secret)))
