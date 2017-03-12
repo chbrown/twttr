@@ -77,7 +77,7 @@
        (apply concat) ; or (into [] cat)
        (apply http-request/prepare-request method url)))
 
-(def ^:private default-client (delay (http/create-client :follow-redirects false)))
+(def default-client (delay (http/create-client :follow-redirects false)))
 
 (defn execute-request
   "Execute the given HTTP request, using the default client if no client is supplied.
