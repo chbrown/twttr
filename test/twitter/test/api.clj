@@ -72,10 +72,10 @@
 
 (deftest test-user
   (let [user-id (:id @current-user)]
-    (is (http-ok? (users-show *user* :params {:user-id user-id})))
-    (is (http-ok? (users-show *app* :params {:user-id user-id})))
-    (is (http-ok? (users-lookup *user* :params {:user-id user-id})))
-    (is (http-ok? (users-lookup *app* :params {:user-id user-id})))
+    (is (http-ok? (users-show *user* :params {:user_id user-id})))
+    (is (http-ok? (users-show *app* :params {:user_id user-id})))
+    (is (http-ok? (users-lookup *user* :params {:user_id user-id})))
+    (is (http-ok? (users-lookup *app* :params {:user_id user-id})))
     (is (http-ok? (users-suggestions *user* :params {:q "john smith"})))
     (is (http-ok? (users-suggestions *app* :params {:q "john smith"})))
     (is (http-ok? (users-suggestions-slug *user* :params {:slug "sports"})))
@@ -120,7 +120,7 @@
   (with-open [temp-list (NewList *user* {:name "Goonies", :mode "public"})]
     (is (http-ok? (lists-members *user* :params {:list_id (:id temp-list)})))
     (is (thrown? Exception (lists-members-show :params {:list_id (:id temp-list)
-                                                        :screen-name (:screen_name @current-user)})))))
+                                                        :screen_name (:screen_name @current-user)})))))
 
 (deftest test-list-subscribers
   (with-open [temp-list (NewList *user* {:name "Goonies", :mode "public"})]
@@ -129,18 +129,18 @@
 (deftest test-list-subscribers-show
   (with-open [temp-list (NewList *user* {:name "Goonies", :mode "public"})]
     (is (thrown? Exception (lists-subscribers-show :params {:list_id (:id temp-list)
-                                                            :screen-name (:screen_name @current-user)})))))
+                                                            :screen_name (:screen_name @current-user)})))))
 
 (deftest test-direct-messages
   (is (http-ok? (direct-messages *user*)))
   (is (http-ok? (direct-messages-sent *user*))))
 
 (deftest test-friendship
-  (is (http-ok? (friendships-show *user* :params {:source-screen-name (:screen_name @current-user)
-                                                  :target-screen-name "AdamJWynne"})))
-  (is (http-ok? (friendships-show *app* :params {:source-screen-name (:screen_name @current-user)
-                                                 :target-screen-name "AdamJWynne"})))
-  (is (http-ok? (friendships-lookup *user* :params {:screen-name "peat,AdamJWynne"})))
+  (is (http-ok? (friendships-show *user* :params {:source_screen_name (:screen_name @current-user)
+                                                  :target_screen_name "AdamJWynne"})))
+  (is (http-ok? (friendships-show *app* :params {:source_screen_name (:screen_name @current-user)
+                                                 :target_screen_name "AdamJWynne"})))
+  (is (http-ok? (friendships-lookup *user* :params {:screen_name "peat,AdamJWynne"})))
   (is (http-ok? (friendships-incoming *user*)))
   (is (http-ok? (friendships-outgoing *user*))))
 
