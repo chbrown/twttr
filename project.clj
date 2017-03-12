@@ -10,4 +10,9 @@
             :url "https://www.eclipse.org/legal/epl-v10.html"}
   :deploy-repositories [["releases" {:url "https://clojars.org/repo"
                                      :sign-releases false}]]
+  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]
+                                  [org.clojure/tools.logging "0.3.1"]
+                                  [ch.qos.logback/logback-classic "1.2.1"]]
+                   :source-paths ["dev"]
+                   :repl-options {:init-ns user}}}
   :min-lein-version "2.0.0")
