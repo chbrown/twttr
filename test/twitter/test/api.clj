@@ -175,17 +175,20 @@
     (is (http-ok? (saved-searches-show-id *user* :params {:id (:id temp-saved-search)})))))
 
 (deftest test-streaming-statuses-filter
-  (let [response (statuses-filter *user* :params {:track "Twitter"})]
-    (is (= 200 (:code (http/status response))))
-    ; cancel the response so that we don't stall here forever
-    (http/cancel (meta response))))
+  (with-open [client (http/create-client)]
+    (let [response (statuses-filter *user* :params {:track "Twitter"} :client client)]
+      (is (= 200 (:code (http/status response))))
+      ; cancel the response so that we don't stall here forever
+      (http/cancel (meta response)))))
 
 (deftest test-streaming-statuses-sample
-  (let [response (statuses-sample *user*)]
-    (is (= 200 (:code (http/status response))))
-    (http/cancel (meta response))))
+  (with-open [client (http/create-client)]
+    (let [response (statuses-sample *user* :client client)]
+      (is (= 200 (:code (http/status response))))
+      (http/cancel (meta response)))))
 
 (deftest test-user-streaming
-  (let [response (user-stream *user*)]
-    (is (= 200 (:code (http/status response))))
-    (http/cancel (meta response))))
+  (with-open [client (http/create-client)]
+    (let [response (user-stream *user* :client client)]
+      (is (= 200 (:code (http/status response))))
+      (http/cancel (meta response)))))
