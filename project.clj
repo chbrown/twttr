@@ -1,4 +1,4 @@
-(defproject twitter-api/twitter-api "1.8.0"
+(defproject twitter-api/twitter-api "2.0.0-alpha1-SNAPSHOT"
   :description "Async interface to Twitter's REST and Streaming APIs"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
@@ -13,6 +13,5 @@
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]
                                   [org.clojure/tools.logging "0.3.1"]
                                   [ch.qos.logback/logback-classic "1.2.2"]]
-                   :source-paths ["dev"]
-                   :repl-options {:init-ns user}}}
-  :min-lein-version "2.0.0")
+                   :source-paths ["dev" "src"]
+                   :repl-options {:init-ns user}}})
