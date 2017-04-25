@@ -1,30 +1,15 @@
 # twitter-api
 
-This is a Clojure library for accessing the Twitter API using [`http.async.client`](https://github.com/cch1/http.async.client).
+This is a Clojure (JVM) library for consuming the Twitter API using [`http.async.client`](https://github.com/cch1/http.async.client) and [`clj-oauth`](https://github.com/mattrepl/clj-oauth).
 
-It endeavors to implement all Twitter APIs:
 * [Streaming](https://dev.twitter.com/streaming/public)
-* [Search](https://dev.twitter.com/rest/public/search)
 * [REST](https://dev.twitter.com/rest/reference)
 
-It is tested by interacting with the live Twitter API.
 
-## Why did I make this library?
-
-* I felt the current offerings were a bit out of date
-* I wanted the efficiency of the async comms libraries
-* I needed some stuff from the headers returned by twitter (i.e. the rate-limiting stuff and etag)
-* I wanted full API coverage (restful, streaming and search)
-
-## Giants upon whose shoulders I have stood
-
-* [`http.async.client`](https://github.com/cch1/http.async.client) by Hubert Iwaniuk
-* [`clj-oauth`](https://github.com/mattrepl/clj-oauth) by Matt Revelle
-
-## Leiningen
+## Install
 
 `twitter-api` is published on [Clojars](https://clojars.org/twitter-api).
-Add the following to your `project.clj`'s `:dependencies`:
+To install with Leiningen, add the following to your `project.clj`'s `:dependencies`:
 
     [twitter-api "1.8.0"]
 
