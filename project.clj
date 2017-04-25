@@ -12,6 +12,7 @@
                                      :sign-releases false}]]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]
                                   [org.clojure/tools.logging "0.3.1"]
+                                  [org.clojure/tools.cli "0.3.5"]
                                   [ch.qos.logback/logback-classic "1.2.2"]]
                    :source-paths ["dev" "src"]
                    :repl-options {:init-ns user}}})
