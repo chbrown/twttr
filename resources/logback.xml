@@ -1,0 +1,15 @@
+<configuration debug="false">
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <target>System.err</target>
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %-10contextName %logger - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="io.netty" level="INFO" />
+  <logger name="io.netty.util.internal.NativeLibraryLoader" level="WARN" />
+
+  <root level="TRACE">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>
