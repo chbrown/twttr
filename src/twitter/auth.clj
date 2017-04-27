@@ -1,9 +1,7 @@
 (ns twitter.auth
   "OAuth credential management for both user and app-only authentication"
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
             [clojure.data.json :as json]
-            [clojure.data.codec.base64 :as base64]
             [aleph.http :as http]
             [oauth.client :as oauth]
             [oauth.signature :refer [url-encode]]))
@@ -11,17 +9,14 @@
 (defn- request-app-only-token
   "Request a 'Bearer' token from Twitter for app-only authentication"
   [consumer-key consumer-secret]
-  (let [auth-string (str/join ":" (map url-encode [consumer-key consumer-secret]))
-        auth-base64 (String. ^bytes (base64/encode (.getBytes auth-string)))
-        req {:request-method :post
-             :url "https://api.twitter.com/oauth2/token"
-             :headers {:Authorization (str "Basic " auth-base64)
-                       :Content-Type "application/x-www-form-urlencoded;charset=UTF-8"}
-             :body "grant_type=client_credentials"}
-        {:keys [status body]} @(http/request req)]
-    (if (= status 200)
-      (get (json/read (io/reader body)) "access_token")
-      (throw (Exception. (str "Failed to retrieve application-only token due to an unknown error: " (slurp body)))))))
+  (let [response @(http/request {:request-method :post
+                                 :url "https://api.twitter.com/oauth2/token"
+                                 :form-params {"grant_type" "client_credentials"}
+                                 :basic-auth (map url-encode [consumer-key consumer-secret])})]
+    (if (= 200 (:status response))
+      (get (json/read (io/reader (:body response))) "access_token")
+      (let [msg (str "Failed to retrieve application-only token. Error: " (slurp (:body response)))]
+        (throw (ex-info msg (dissoc response :body)))))))
 
 (def ^:private get-app-only-token (memoize request-app-only-token))
 
