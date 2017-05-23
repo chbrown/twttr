@@ -1,4 +1,4 @@
-(ns twitter.auth
+(ns twttr.auth
   "OAuth credential management for both user and app-only authentication"
   (:require [clojure.java.io :as io]
             [clojure.data.json :as json]
