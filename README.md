@@ -14,6 +14,11 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
     [twttr "2.0.0"]
 
 
+## Documentation
+
+[Auto-generated Codox pages](https://chbrown.github.io/twttr/)
+
+
 ## Example
 
 ```clojure
