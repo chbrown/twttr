@@ -7,6 +7,9 @@
                  [org.clojure/data.json "0.2.6"]
                  [aleph "0.4.3"]
                  [clj-oauth "1.5.5"]]
+  :codox {:exclude-vars nil
+          :source-paths ["src"]
+          :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}
   :profiles {:uberjar {:aot :all}
              :dev {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]]
                    :source-paths ["dev" "src"]
