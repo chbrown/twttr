@@ -137,9 +137,9 @@
 
 (deftest test-friendship
   (is (http-ok? (friendships-show user-credentials :params {:source_screen_name (:screen_name @current-user)
-                                                  :target_screen_name "AdamJWynne"})))
+                                                            :target_screen_name "AdamJWynne"})))
   (is (http-ok? (friendships-show app-credentials :params {:source_screen_name (:screen_name @current-user)
-                                                 :target_screen_name "AdamJWynne"})))
+                                                           :target_screen_name "AdamJWynne"})))
   (is (http-ok? (friendships-lookup user-credentials :params {:screen_name "peat,AdamJWynne"})))
   (is (http-ok? (friendships-incoming user-credentials)))
   (is (http-ok? (friendships-outgoing user-credentials))))

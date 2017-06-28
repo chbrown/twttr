@@ -42,7 +42,8 @@
   "read an error response into a string error message"
   [response]
   (let [response (update response :body slurp)
-        body (try (read-json (:body response))
+        body (try
+               (read-json (:body response))
                ; java.lang.Exception: JSON error
                (catch Exception _
                  (:body response)))
@@ -94,8 +95,7 @@
   (fn rest-middleware-handler [request]
     (d/chain (handler request)
              (fn [response]
-               (with-meta (read-json (:body response))
-                          (dissoc response :body))))))
+               (with-meta (read-json (:body response)) (dissoc response :body))))))
 
 (let [defaults {:prefix "https://api.twitter.com/1.1"
                 :middleware wrap-rest-middleware}]
@@ -223,11 +223,11 @@
   (fn stream-middleware-handler [request]
     (d/chain (handler request)
              (fn [response]
-               (with-meta (->> (bs/to-line-seq (:body response))
+               (with-meta (->> (:body response)
+                               (bs/to-line-seq)
                                ; Twitter will send lots of newlines as keep-alive signals if the stream is sparse
                                (remove empty?)
-                               (map read-json))
-                          response)))))
+                               (map read-json)) response)))))
 
 (let [defaults {:prefix "https://stream.twitter.com/1.1"
                 :middleware wrap-stream-middleware}]
