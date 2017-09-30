@@ -50,6 +50,17 @@
         (oauth/credentials user-token user-token-secret request-method request-uri query)
         (oauth/authorization-header "Twitter API"))))
 
+; overwrite defrecord-supplied constructor with version adding pre-conditions
+; see (pprint (macroexpand-1 (read-string (source-fn '->UserCredentials))))
+(defn ->UserCredentials
+  "Positional factory function for class user.UserCredentials."
+  [consumer-key consumer-secret user-token user-token-secret]
+  {:pre [(some? consumer-key)
+         (some? consumer-secret)
+         (some? user-token)
+         (some? user-token-secret)]}
+  (new UserCredentials consumer-key consumer-secret user-token user-token-secret))
+
 (defn env->UserCredentials
   "Create a UserCredentials instance from the environment variables:
   CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, and ACCESS_TOKEN_SECRET"
