@@ -1,6 +1,5 @@
 (ns twttr.test.api
   (:require [clojure.test :refer :all]
-            [aleph.http :as http]
             [twttr.api :refer :all]
             [twttr.test.auth :refer [user-credentials app-credentials]]))
 

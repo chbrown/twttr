@@ -5,7 +5,6 @@
             [aleph.http :as http]
             [byte-streams :as bs]
             [manifold.deferred :as d]
-            [manifold.stream :as s]
             [twttr.auth :refer [auth-header]]))
 
 (defn- replace-pattern-params
