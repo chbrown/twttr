@@ -14,12 +14,17 @@
     requires line breaks, it is the responsibility of the implementation to
     indent `offset` spaces after the line break"))
 
+(defn- indent-seqs
+  ; separate each value on its own line
+  [seqs offset]
+  ; calculate the indentation this function inserts
+  (let [indent (str/join (repeat offset \space))]
+    (interpose (str \newline indent) seqs)))
+
 (defn- pr-seq-items
   "Helper for pr-seq implementations like IPersistentList and IPersistentVector."
   [items offset]
-  ; separate each value on its own line
-  (let [indent (str/join (repeat offset \space))]
-    (interpose (str \newline indent) (map #(pr-seq % offset) items))))
+  (indent-seqs (map #(pr-seq % offset) items) offset))
 
 (extend-protocol FixedWidthLayout
   clojure.lang.IPersistentMap
@@ -35,12 +40,10 @@
           key-seqs (map (fn [k] (str k (padding \space key-width k))) key-strings)
           ; value-offset adds the key-width and 1 for the separator space
           value-offset (+ key-offset key-width 1)
-          value-seqs (map #(pr-seq % value-offset) (vals m))
-          ; calculate the indentation this function inserts
-          key-indent (str/join (repeat key-offset \space))]
+          value-seqs (map #(pr-seq % value-offset) (vals m))]
       (list
        (list \{)
-       (interpose (str \newline key-indent) (map #(list %1 \space %2) key-seqs value-seqs))
+       (indent-seqs (map #(list %1 \space %2) key-seqs value-seqs) key-offset)
        (list \}))))
   clojure.lang.IPersistentList
   (pr-seq [l offset]
