@@ -5,7 +5,7 @@
             :url "https://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
-                 [aleph "0.4.3"]
+                 [aleph "0.4.4"]
                  [clj-oauth "1.5.5"]]
   :codox {:exclude-vars nil
           :source-paths ["src"]
