@@ -24,23 +24,6 @@
     ; filter out the errors/waits
     (remove nil? (interleave tries waits))))
 
-(deftest test-replace-pattern-params
-  ; fully specified replacements
-  (let [pattern "http://example.com/{:version}/{:id}/test.json"
-        params {:version 1, :id "my123"}
-        result (#'twttr.api/replace-pattern-params pattern params)]
-    (is (= "http://example.com/1/my123/test.json" result)))
-  ; no replacements but with extra params
-  (let [pattern "http://example.com/no-replacements.json"
-        params {:version 1, :id "my123"}
-        result (#'twttr.api/replace-pattern-params pattern params)]
-    (is (= "http://example.com/no-replacements.json" result)))
-  ; one missing replacement
-  (let [pattern "http://example.com/{:version}/{:id}/test.json"
-        params {:id "my123"}
-        result (#'twttr.api/replace-pattern-params pattern params)]
-    (is (= "http://example.com//my123/test.json" result))))
-
 (deftest test-account
   (is (http-ok? (account-verify-credentials user-credentials)))
   (is (http-ok? (application-rate-limit-status user-credentials)))
