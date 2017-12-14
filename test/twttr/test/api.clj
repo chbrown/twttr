@@ -87,7 +87,7 @@
   java.io.Closeable ; there's no clojure.core/ICloseable (yet?)
   (close [this] (lists-destroy credentials :params {:list_id id})))
 
-(defn NewList
+(defn ^List NewList
   [credentials params]
   (let [{:keys [id]} (lists-create credentials :params params)]
     ; wait until it's ready
@@ -145,7 +145,7 @@
   java.io.Closeable
   (close [this] (saved-searches-destroy-id credentials :params {:id id})))
 
-(defn NewSavedSearch
+(defn ^SavedSearch NewSavedSearch
   [credentials params]
   (let [{:keys [id]} (saved-searches-create credentials :params params)]
     ; TODO: wait until it's ready
