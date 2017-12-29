@@ -14,12 +14,47 @@
     requires line breaks, it is the responsibility of the implementation to
     indent `offset` spaces after the line break"))
 
+(defn- split-on
+  "Return a lazy sequence of each consecutive segment of `coll` for which
+  pred returns false for all elements."
+  ; TODO: rewrite
+  [pred coll]
+  (remove #(every? pred %) (partition-by pred coll)))
+
+(defprotocol CountableChars
+  "Implemented by types that can be represented by a known number of characters"
+  (count-chars [this] "Count the number of characters in `this`"))
+
+(extend-protocol CountableChars
+  clojure.lang.Seqable
+  (count-chars [coll] (apply + (map count-chars coll)))
+  java.lang.CharSequence
+  (count-chars [cs] (count cs))
+  java.lang.String
+  (count-chars [s] (count s))
+  java.lang.Character
+  (count-chars [_] 1)
+  nil
+  (count-chars [_] 3))
+
+(defn- measure-width
+  [seqs]
+  (->> seqs
+       flatten
+       (split-on #(= \newline %))
+       (map count-chars)
+       ; default to 0 if these seqs carry no width
+       (apply max 0)))
+
+(def ^:dynamic *wrap-width* 40)
+
 (defn- indent-seqs
-  ; separate each value on its own line
   [seqs offset]
   ; calculate the indentation this function inserts
-  (let [indent (str/join (repeat offset \space))]
-    (interpose (str \newline indent) seqs)))
+  (let [width (measure-width seqs)]
+    (if (> width *wrap-width*)
+      (interpose (list \newline (str/join (repeat offset \space))) seqs)
+      (interpose (list \space) seqs))))
 
 (defn- pr-seq-items
   "Helper for pr-seq implementations like IPersistentList and IPersistentVector."
@@ -37,7 +72,7 @@
           key-width (apply max (map count key-strings))
           ; key-offset adds 1 for the opening brace
           key-offset (+ offset 1)
-          key-seqs (map (fn [k] (str k (padding \space key-width k))) key-strings)
+          key-seqs (map (fn [k] (list k (padding \space key-width k))) key-strings)
           ; value-offset adds the key-width and 1 for the separator space
           value-offset (+ key-offset key-width 1)
           value-seqs (map #(pr-seq % value-offset) (vals m))]
