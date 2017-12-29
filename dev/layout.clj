@@ -9,7 +9,7 @@
 (defprotocol FixedWidthLayout
   "A protocol for fixed-width layout of data structures for pretty-printing purposes."
   (pr-seq [this offset]
-    "Return a seq (of strings, or seqs of strings, etc.) representing `this`.
+    "Return a seq (of characters, or strings, or seqs of strings, etc.) representing `this`.
     When called, the current line position is at `offset`, and if the result
     requires line breaks, it is the responsibility of the implementation to
     indent `offset` spaces after the line break"))
@@ -115,8 +115,11 @@
   "Like clojure.core/pr, but prettier, albeit less conservative with whitespace."
   ([] nil)
   ([x]
-   (doseq [string (flatten (pr-seq x 0))]
-     (.append *out* string)))
+   (doseq [item (flatten (pr-seq x 0))]
+     (cond
+       (string? item) (.append *out* ^CharSequence item)
+       (char? item)   (.append *out* ^char item)
+       :else          (throw (ex-info "Unrecognized layout item" {:item item})))))
   ([x & more]
    (pr-pretty x)
    (.append *out* \space)
