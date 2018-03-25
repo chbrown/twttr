@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [name])
   (:require [clojure.string :as str]))
 
-(defrecord Endpoint [domain version path request-method format])
+(defrecord Endpoint [server-name version path request-method format])
 
 ;; Sections below are derived from the sidebar at https://developer.twitter.com/en/docs
 
@@ -305,12 +305,12 @@
 (defn url
   "Format the URL for the given endpoint, substituting values from params into its path as needed"
   [endpoint params]
-  (let [{:keys [domain version path format]} endpoint
+  (let [{:keys [server-name version path format]} endpoint
         ; Replace named placeholders in pattern with values from params
         path (str/replace path #":(\w+)" (fn [[_ param-name]] (str (get params (keyword param-name)))))]
-    (str "https://" domain version path (when (= format :json) ".json"))))
+    (str "https://" server-name version path (when (= format :json) ".json"))))
 
 (defn streaming?
   "Return true if the given endpoint produces a streaming response"
   [endpoint]
-  (str/ends-with? (:domain endpoint) "stream.twitter.com"))
+  (str/ends-with? (:server-name endpoint) "stream.twitter.com"))
