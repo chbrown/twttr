@@ -19,8 +19,8 @@
                  (:body response)))
         first-error (or (first (:errors body)) (:error body))
         message-parts (list "Twitter API error response"
-                            (str "(#" (or (:code first-error) "N/A") ")")
-                            (when (= 429 (:status response)) ; rate limit exceeeded
+                            (str "(#" (get first-error :code "N/A") ")")
+                            (when (= 429 (:status response))
                               (str "Rate limit exceeded; next reset at "
                                    (get-in response [:headers :x-rate-limit-reset])
                                    " (UTC epoch seconds)"))
