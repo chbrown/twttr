@@ -8,6 +8,8 @@
                               [:email "io@henrian.com"]]]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.json "0.2.6"]
+                 [org.clojure/tools.logging "0.4.0"]
+                 [ch.qos.logback/logback-classic "1.2.3"]
                  [aleph "0.4.4"]
                  [byte-streams "0.2.3"]
                  [clj-oauth "1.5.5"]]
