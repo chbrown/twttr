@@ -4,6 +4,11 @@
 
 (defrecord Endpoint [server-name version path request-method format])
 
+(defn Endpoint?
+  "Return true if `endpoint` is an instance of the Endpoint class"
+  [endpoint]
+  (instance? Endpoint endpoint))
+
 ;; Sections below are derived from the sidebar at https://developer.twitter.com/en/docs
 
 ;; OAuth
