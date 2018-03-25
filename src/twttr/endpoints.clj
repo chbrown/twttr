@@ -307,13 +307,15 @@
           (subs 1)
           (str/replace #"[^a-zA-Z]+" "-"))))
 
-(defn url
-  "Format the URL for the given endpoint, substituting values from params into its path as needed"
-  [endpoint params]
-  (let [{:keys [server-name version path format]} endpoint
-        ; Replace named placeholders in pattern with values from params
-        path (str/replace path #":(\w+)" (fn [[_ param-name]] (str (get params (keyword param-name)))))]
-    (str "https://" server-name version path (when (= format :json) ".json"))))
+(defn uri
+  "Prepare the :uri value of a Ring request map from `endpoint`,
+  replacing all placeholders in the :path with values from `params`"
+  [{:keys [version path format] :as endpoint} params]
+  (str version
+       ; replace named placeholders in pattern with values from params
+       (str/replace path #":(\w+)" (fn [[_ param-name]] (str (get params (keyword param-name)))))
+       ; add extension for :json requests
+       (when (= format :json) ".json")))
 
 (defn streaming?
   "Return true if the given endpoint produces a streaming response"

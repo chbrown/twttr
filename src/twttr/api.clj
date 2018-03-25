@@ -70,7 +70,7 @@
   [endpoint credentials options]
   (let [request-method (:request-method endpoint)
         params (:params options)
-        url (endpoints/url endpoint params)
+        url (endpoints/uri endpoint params)
         query-params (merge (:query options) params)
         ; Prepare the HTTP request, signing with OAuth as directed by credentials
         authorization (auth-header credentials request-method url query-params)
