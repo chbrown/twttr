@@ -11,6 +11,11 @@
   (auth-header [this request-method request-uri query]
     "Generate the string value for an Authorization HTTP header"))
 
+(defn- map-values
+  "Contruct a new map with all the values of the map kvs passed through f"
+  [f kvs]
+  (into {} (for [[k v] kvs] [k (f v)])))
+
 ;; app
 
 (defn- extract-access-token
@@ -39,12 +44,13 @@
     (str "Bearer " @(request-app-only-token {:consumer-key consumer-key :consumer-secret consumer-secret}))))
 
 (defn env->AppCredentials
-  "Create an AppCredentials instance from the environment variables:
+  "Create an AppCredentials instance from environment variables, defaulting to
   CONSUMER_KEY and CONSUMER_SECRET"
-  []
-  (->> ["CONSUMER_KEY" "CONSUMER_SECRET"]
-       (map #(System/getenv %))
-       (apply ->AppCredentials)))
+  ([]
+   (env->AppCredentials {:consumer-key    "CONSUMER_KEY"
+                         :consumer-secret "CONSUMER_SECRET"}))
+  ([env-mapping]
+   (map->AppCredentials (map-values #(System/getenv %) env-mapping))))
 
 ;; user
 
@@ -73,9 +79,12 @@
   (new UserCredentials consumer-key consumer-secret user-token user-token-secret))
 
 (defn env->UserCredentials
-  "Create a UserCredentials instance from the environment variables:
+  "Create a UserCredentials instance from environment variables, defaulting to
   CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, and ACCESS_TOKEN_SECRET"
-  []
-  (->> ["CONSUMER_KEY" "CONSUMER_SECRET" "ACCESS_TOKEN" "ACCESS_TOKEN_SECRET"]
-       (map #(System/getenv %))
-       (apply ->UserCredentials)))
+  ([]
+   (env->UserCredentials {:consumer-key      "CONSUMER_KEY"
+                          :consumer-secret   "CONSUMER_SECRET"
+                          :user-token        "ACCESS_TOKEN"
+                          :user-token-secret "ACCESS_TOKEN_SECRET"}))
+  ([env-mapping]
+   (map->UserCredentials (map-values #(System/getenv %) env-mapping))))
