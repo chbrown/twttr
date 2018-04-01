@@ -10,25 +10,34 @@
 ; potentially modifies that request, runs request through the given handler to get a response,
 ; and then returns the response, potentially after modifying it.
 
+(defn- parse-rest
+  "Parse the body of `response` (potentially empty) as a single JSON document,
+  and re-attach the full response as metadata."
+  [response]
+  (with-meta (-> (:body response)
+                 (io/reader)
+                 (json/read :key-fn keyword :eof-error? false)) response))
+
 (defn wrap-rest
   "REST middleware for parsing response body as single JSON document"
   [handler]
   (fn rest-middleware-handler [request]
-    (d/chain (handler request)
-             (fn [response]
-               (with-meta (-> (:body response)
-                              (io/reader)
-                              (json/read :key-fn keyword :eof-error? false)) response)))))
+    (d/chain (handler request) parse-rest)))
+
+(defn- parse-stream
+  "Parse the body of `response` as a sequence of lines of JSON, ignoring empty lines
+  (Twitter will send lots of newlines as keep-alive signals if the stream is sparse),
+  and re-attach the full response as metadata."
+  [response]
+  (with-meta (->> (:body response)
+                  (bs/to-line-seq)
+                  (remove empty?)
+                  (map #(json/read-str % :key-fn keyword))) response))
 
 (defn wrap-stream
   "Streaming middleware for parsing response as infinite sequence of JSON documents,
+  Twitter will send lots of newlines as keep-alive signals if the stream is sparse
   separated by newlines"
   [handler]
   (fn stream-middleware-handler [request]
-    (d/chain (handler request)
-             (fn [response]
-               (with-meta (->> (:body response)
-                               (bs/to-line-seq)
-                               ; Twitter will send lots of newlines as keep-alive signals if the stream is sparse
-                               (remove empty?)
-                               (map #(json/read-str % :key-fn keyword))) response)))))
+    (d/chain (handler request) parse-stream)))
