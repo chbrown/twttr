@@ -3,31 +3,40 @@
   (:require [clojure.java.io :as io]
             [clojure.data.json :as json]
             [aleph.http :as http]
+            [manifold.deferred :as d]
             [oauth.client :as oauth]
             [oauth.signature :refer [url-encode]]))
-
-(defn- request-app-only-token
-  "Request a 'Bearer' token from Twitter for app-only authentication"
-  [consumer-key consumer-secret]
-  (let [response @(http/request {:request-method :post
-                                 :url "https://api.twitter.com/oauth2/token"
-                                 :form-params {"grant_type" "client_credentials"}
-                                 :basic-auth (map url-encode [consumer-key consumer-secret])})]
-    (if (= 200 (:status response))
-      (get (json/read (io/reader (:body response))) "access_token")
-      (let [msg (str "Failed to retrieve application-only token. Error: " (slurp (:body response)))]
-        (throw (ex-info msg (dissoc response :body)))))))
-
-(def ^:private get-app-only-token (memoize request-app-only-token))
 
 (defprotocol Credentials
   (auth-header [this request-method request-uri query]
     "Generate the string value for an Authorization HTTP header"))
 
+;; app
+
+(defn- extract-access-token
+  "Extract the `access_token` value out of a JSON response
+  from the Twitter API's `POST oauth2/token` endpoint."
+  [{:keys [status body] :as response}]
+  (if (= 200 status)
+    (get (json/read (io/reader body)) "access_token")
+    (throw (ex-info (str "Failed to extract access token. Error: " (slurp body)) response))))
+
+(defn- request-app-only-token
+  "Request a 'Bearer' token from Twitter for app-only authentication,
+  returning a deferred aleph.http request.
+  See documentation at https://developer.twitter.com/en/docs/basics/authentication/api-reference/token"
+  [{:keys [consumer-key consumer-secret] :as credentials}]
+  (-> {:request-method :post
+       :url "https://api.twitter.com/oauth2/token"
+       :form-params {"grant_type" "client_credentials"}
+       :basic-auth (map url-encode [consumer-key consumer-secret])}
+      (http/request)
+      (d/chain extract-access-token)))
+
 (defrecord AppCredentials [consumer-key consumer-secret]
   Credentials
   (auth-header [_ _ _ _]
-    (str "Bearer " (get-app-only-token consumer-key consumer-secret))))
+    (str "Bearer " @(request-app-only-token {:consumer-key consumer-key :consumer-secret consumer-secret}))))
 
 (defn env->AppCredentials
   "Create an AppCredentials instance from the environment variables:
@@ -36,6 +45,8 @@
   (->> ["CONSUMER_KEY" "CONSUMER_SECRET"]
        (map #(System/getenv %))
        (apply ->AppCredentials)))
+
+;; user
 
 (defrecord UserCredentials [consumer-key consumer-secret user-token user-token-secret]
   Credentials
