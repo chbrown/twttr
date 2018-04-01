@@ -10,7 +10,7 @@
 ; potentially modifies that request, runs request through the given handler to get a response,
 ; and then returns the response, potentially after modifying it.
 
-(defn wrap-rest-middleware
+(defn wrap-rest
   "REST middleware for parsing response body as single JSON document"
   [handler]
   (fn rest-middleware-handler [request]
@@ -20,7 +20,7 @@
                               (io/reader)
                               (json/read :key-fn keyword :eof-error? false)) response)))))
 
-(defn wrap-stream-middleware
+(defn wrap-stream
   "Streaming middleware for parsing response as infinite sequence of JSON documents,
   separated by newlines"
   [handler]

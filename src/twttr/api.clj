@@ -3,7 +3,7 @@
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [twttr.middleware :refer [wrap-rest-middleware wrap-stream-middleware]]
+            [twttr.middleware :refer [wrap-rest wrap-stream]]
             [twttr.endpoints :as endpoints]
             [twttr.auth :refer [auth-header]]))
 
@@ -47,8 +47,8 @@
         ; Prepare the HTTP request, signing with OAuth as directed by credentials
         authorization (auth-header credentials request-method url query-params)
         middleware (if (endpoints/streaming? endpoint)
-                     wrap-stream-middleware
-                     wrap-rest-middleware)]
+                     wrap-stream
+                     wrap-rest)]
     (request request-method url query-params authorization (assoc options :middleware middleware))))
 
 (doseq [endpoint endpoints/all]
