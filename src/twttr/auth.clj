@@ -1,6 +1,7 @@
 (ns twttr.auth
   "OAuth credential management for both user and app-only authentication"
-  (:require [clojure.java.io :as io]
+  (:require [clojure.string :as str]
+            [clojure.java.io :as io]
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
@@ -88,3 +89,43 @@
                           :user-token-secret "ACCESS_TOKEN_SECRET"}))
   ([env-mapping]
    (map->UserCredentials (map-values #(System/getenv %) env-mapping))))
+
+;; collection
+
+(defn- map->Credentials
+  "Create an instance of UserCredentials from `m` (a map) if it has values for
+  the keys :user-token and :user-token-secret, otherwise create an AppCredentials."
+  [credentials-map]
+  (if (every? credentials-map [:user-token :user-token-secret])
+    (map->UserCredentials credentials-map)
+    (map->AppCredentials credentials-map)))
+
+(defn- read-csv
+  "Parse `lines` (a seq of strings) as CSV (no quoting or escaping).
+  Return a seq of maps, using the first line in `lines` as column headers
+  and remapping these headers to desired output key names as specified by
+  `column-mapping`."
+  [lines column-mapping]
+  (let [[columns & rows] (map #(str/split % #",") lines)
+        ; columns-indices is a mapping from column name (strings) to their index in the rows
+        columns-indices (zipmap columns (range))
+        ; row-mapping is a mapping from the desired output keys to their column indices in the csv
+        row-mapping (map-values columns-indices column-mapping)]
+    (map (fn [row] (map-values row row-mapping)) rows)))
+
+(defn file->Credentials-coll
+  "Read a sequence of App/UserCredentials instances from a CSV file.
+   * `column-mapping` is a mapping from (App/)UserCredential keys to their
+     column names in the CSV, defaulting to:
+     consumer_key, consumer_secret, access_token, access_token_secret"
+  ([csv-file]
+   (file->Credentials-coll csv-file {:consumer-key      "consumer_key"
+                                     :consumer-secret   "consumer_secret"
+                                     :user-token        "access_token"
+                                     :user-token-secret "access_token_secret"}))
+  ([csv-file column-mapping]
+   (with-open [reader (io/reader csv-file)]
+     ; this must be eagerly-evaluated due to the file input
+     (->> (read-csv (line-seq reader) column-mapping)
+          (map map->Credentials)
+          (doall)))))
