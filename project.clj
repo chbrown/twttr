@@ -14,8 +14,8 @@
                  [byte-streams "0.2.3"]
                  [clj-oauth "1.5.5"]]
   :profiles {:uberjar {:aot :all}
-             :dev {:plugins [[lein-codox "0.10.3"]]
-                   :codox {:exclude-vars nil
-                           :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}}
+             :deploy {:plugins [[lein-codox "0.10.3"]]
+                      :codox {:exclude-vars nil
+                              :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}}
              :repl {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]]
                     :source-paths ["dev"]}})
