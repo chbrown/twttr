@@ -3,7 +3,7 @@
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [twttr.middleware :refer [wrap-rest wrap-stream]]
+            [twttr.middleware :refer [wrap-rest wrap-stream wrap-auth]]
             [twttr.endpoints :as endpoints]
             [twttr.auth :refer [auth-header]]))
 
@@ -27,31 +27,35 @@
                             (:request body))]
     (ex-info (->> message-parts (remove nil?) (str/join " ")) response)))
 
-(defn request
-  [request-method url query-params authorization options]
-  (-> options
-      (assoc :request-method request-method :url url :query-params query-params)
-      (assoc-in [:headers :Authorization] authorization)
-      (http/request)
-      (d/catch clojure.lang.ExceptionInfo
-               (fn [ex]
-                 (throw (ex-twitter (ex-data ex)))))
-      (deref)))
-
 (defn request-endpoint
-  [endpoint credentials options]
-  (let [request-method (:request-method endpoint)
-        params (:params options)
-        url (endpoints/uri endpoint params)
-        query-params (merge (:query options) params)
-        ; Prepare the HTTP request, signing with OAuth as directed by credentials
-        authorization (auth-header credentials request-method url query-params)
-        middleware (if (endpoints/streaming? endpoint)
-                     wrap-stream
-                     wrap-rest)]
-    (request request-method url query-params authorization (assoc options :middleware middleware))))
+  "Prepare and send an HTTP request to the Twitter API, signing with `credentials`
+  (via OAuth as directed by the wrap-auth middleware), returning a deferred HTTP response.
+  Options map:
+  * :params - mapping from Endpoint :path placeholders to values
+  * :query-params - additional query parameters"
+  ([endpoint credentials]
+   (request-endpoint endpoint credentials {}))
+  ([endpoint credentials {:keys [params query-params]}]
+   {:pre [(endpoints/Endpoint? endpoint)]}
+   (let [{:keys [server-name request-method]} endpoint
+         wrap-body (if (endpoints/streaming? endpoint) wrap-stream wrap-rest)
+         middleware (fn [handler] (-> handler (wrap-auth credentials) wrap-body))]
+     ; Prepare and send the HTTP request, signing with OAuth as directed by the wrap-auth middleware.
+     ; we cannot add fields to #twttr.endpoints.Endpoint{...} to flesh out a ring request,
+     ; since aleph expects (ring) requests that are plain maps, and thus work as functions,
+     ; which records do not (for... reasons)
+     (-> {:request-method request-method
+          :scheme :https
+          :server-name server-name
+          :uri (endpoints/uri endpoint params)
+          :query-params query-params
+          :middleware middleware}
+         (http/request)
+         (d/catch clojure.lang.ExceptionInfo
+                  (fn [ex]
+                    (throw (ex-twitter (ex-data ex)))))))))
 
 (doseq [endpoint endpoints/all]
   (intern *ns* (symbol (endpoints/name endpoint))
           (fn [credentials & {:as options}]
-            (request-endpoint endpoint credentials options))))
+            (deref (request-endpoint endpoint credentials options)))))
