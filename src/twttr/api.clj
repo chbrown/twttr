@@ -31,11 +31,11 @@
   "Prepare and send an HTTP request to the Twitter API, signing with `credentials`
   (via OAuth as directed by the wrap-auth middleware), returning a deferred HTTP response.
   Options map:
-  * :params - mapping from Endpoint :path placeholders to values
-  * :query-params - additional query parameters"
+  * :params - mapping from Endpoint :path placeholders to values,
+              along with additional query parameters"
   ([endpoint credentials]
    (request-endpoint endpoint credentials {}))
-  ([endpoint credentials {:keys [params query-params]}]
+  ([endpoint credentials {:keys [params]}]
    {:pre [(endpoints/Endpoint? endpoint)]}
    (let [{:keys [server-name request-method]} endpoint
          wrap-body (if (endpoints/streaming? endpoint) wrap-stream wrap-rest)
@@ -48,7 +48,7 @@
           :scheme :https
           :server-name server-name
           :uri (endpoints/uri endpoint params)
-          :query-params query-params
+          :query-params (apply dissoc params (endpoints/path-placeholders endpoint))
           :middleware middleware}
          (http/request)
          (d/catch clojure.lang.ExceptionInfo
