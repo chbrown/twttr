@@ -1,5 +1,5 @@
 (ns twttr.endpoints-tests
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [twttr.endpoints :as endpoints]))
 
 (def api-reference-index

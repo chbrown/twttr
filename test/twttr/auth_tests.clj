@@ -1,5 +1,5 @@
 (ns twttr.auth-tests
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [twttr.auth :as auth]))
 
 (def user-credentials (auth/env->UserCredentials))

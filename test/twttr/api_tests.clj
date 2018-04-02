@@ -1,5 +1,5 @@
 (ns twttr.api-tests
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [twttr.api :refer :all]
             [twttr.auth-tests :refer [user-credentials app-credentials]]))
 
