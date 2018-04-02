@@ -93,6 +93,8 @@
             "/direct_messages/new"
             "/direct_messages/welcome_messages/new"
             "/direct_messages/welcome_messages/rules/new"
+            "/direct_messages/mark_read"
+            "/direct_messages/indicate_typing"
             "/favorites/create"
             "/favorites/destroy"
             "/friendships/create"
