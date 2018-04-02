@@ -39,10 +39,10 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 ; with the rest of the response attached as metadata:
 (meta *1)
 ;=> {:request-time 263,
-     :headers {"x-rate-limit-reset" "1495550008", "last-modified" "Tue, 23 May 2017 14:29:28 GMT",
-               "x-rate-limit-limit" "900", "x-rate-limit-remaining" "898", ...},
-     :status 200,
-     :connection-time 269}
+;    :headers {"x-rate-limit-reset" "1495550008", "last-modified" "Tue, 23 May 2017 14:29:28 GMT",
+;              "x-rate-limit-limit" "900", "x-rate-limit-remaining" "898", ...},
+;    :status 200,
+;    :connection-time 269}
 
 ; update your status
 (api/statuses-update creds :params {:status "Well that was quick."})
