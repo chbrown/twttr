@@ -1,4 +1,4 @@
-(ns twttr.test.endpoints
+(ns twttr.endpoints-tests
   (:require [clojure.test :refer :all]
             [twttr.endpoints :as endpoints]))
 

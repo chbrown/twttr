@@ -1,4 +1,4 @@
-(ns twttr.test.auth
+(ns twttr.auth-tests
   (:require [clojure.test :refer :all]
             [twttr.auth :as auth]))
 

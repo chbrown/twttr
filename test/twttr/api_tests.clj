@@ -1,7 +1,7 @@
-(ns twttr.test.api
+(ns twttr.api-tests
   (:require [clojure.test :refer :all]
             [twttr.api :refer :all]
-            [twttr.test.auth :refer [user-credentials app-credentials]]))
+            [twttr.auth-tests :refer [user-credentials app-credentials]]))
 
 (def current-user (delay (account-verify-credentials user-credentials)))
 
