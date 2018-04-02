@@ -222,6 +222,14 @@
          ["/direct_messages/welcome_messages/rules/new"     :post]]]
     (->Endpoint "api.twitter.com" "/1.1" path request-method :json)))
 
+(def typing-indicator-and-read-receipts
+  "Typing indicator and read receipts
+  https://developer.twitter.com/en/docs/direct-messages/typing-indicator-and-read-receipts/api-reference/new-typing-indicator"
+  (for [[path request-method]
+        [["/direct_messages/mark_read"       :post]
+         ["/direct_messages/indicate_typing" :post]]]
+    (->Endpoint "api.twitter.com" "/1.1" path request-method :json)))
+
 ;; Media
 
 (def upload-media
@@ -292,6 +300,7 @@
           sample-realtime-tweets
           sending-and-receiving-events
           welcome-messages
+          typing-indicator-and-read-receipts
           upload-media
           get-trends-near-a-location
           get-locations-with-trending-topics
