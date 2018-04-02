@@ -17,5 +17,6 @@
              :deploy {:plugins [[lein-codox "0.10.3"]]
                       :codox {:exclude-vars nil
                               :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}}
+             :dev {:source-paths ["test"]}
              :repl {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]]
                     :source-paths ["dev"]}})
