@@ -2,6 +2,7 @@
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
 
+            [twttr.auth :as auth]
             [byte-streams :as bs]
             [manifold.deferred :as d]))
 
@@ -41,3 +42,15 @@
   [handler]
   (fn stream-middleware-handler [request]
     (d/chain (handler request) parse-stream)))
+
+(defn wrap-auth
+  "Authentication-providing middleware. Primarily sets the 'Authorization'
+  header on requests."
+  [handler credentials]
+  {:pre [(satisfies? auth/Credentials credentials)]}
+  (fn auth-middleware-handler [req]
+    (let [{:keys [request-method scheme server-name uri query-params]} req
+          ; Generate the full URL, except query-params, for the given request.
+          request-uri (str (name scheme) "://" server-name uri)
+          authorization (auth/auth-header credentials request-method request-uri query-params)]
+      (handler (assoc-in req [:headers :Authorization] authorization)))))
