@@ -64,6 +64,8 @@
   ([endpoint credentials {:keys [params]}]
    {:pre [(endpoints/Endpoint? endpoint)]}
    (let [{:keys [server-name request-method]} endpoint
+         params-key (if (= request-method :post) :form-params :query-params)
+         non-path-params (apply dissoc params (endpoints/path-placeholders endpoint))
          wrap-body (if (endpoints/streaming? endpoint) wrap-stream wrap-rest)
          middleware (fn [handler] (-> handler (wrap-auth credentials) wrap-body))]
      ; Prepare and send the HTTP request, signing with OAuth as directed by the wrap-auth middleware.
@@ -74,7 +76,7 @@
           :scheme :https
           :server-name server-name
           :uri (endpoints/uri endpoint params)
-          :query-params (apply dissoc params (endpoints/path-placeholders endpoint))
+          params-key non-path-params
           :middleware middleware}
          (http/request)
          (d/catch clojure.lang.ExceptionInfo
