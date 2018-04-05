@@ -6,7 +6,7 @@
   :pom-addition [:developers [:developer
                               [:name "Christopher Brown"]
                               [:email "io@henrian.com"]]]
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/tools.logging "0.4.0"]
                  [ch.qos.logback/logback-classic "1.2.3"]
