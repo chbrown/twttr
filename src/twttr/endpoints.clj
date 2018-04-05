@@ -319,13 +319,13 @@
 (defn path-placeholders
   "Return a sequence of the placeholders in `endpoint`'s :path, as keywords.
   (E.g., to distinguish querystring params from path params.)"
-  [{:keys [path] :as endpoint}]
+  [{:keys [path]}]
   (map (fn [[_ param-name]] (keyword param-name)) (re-seq #":(\w+)" path)))
 
 (defn uri
   "Prepare the :uri value of a Ring request map from `endpoint`,
   replacing all placeholders in the :path with values from `params`"
-  [{:keys [version path format] :as endpoint} params]
+  [{:keys [version path format]} params]
   (str version
        ; replace named placeholders in pattern with values from params
        (str/replace path #":(\w+)" (fn [[_ param-name]] (str (get params (keyword param-name)))))

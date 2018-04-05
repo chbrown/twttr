@@ -31,7 +31,7 @@
   "Request a 'Bearer' token from Twitter for app-only authentication,
   returning a deferred aleph.http request.
   See documentation at https://developer.twitter.com/en/docs/basics/authentication/api-reference/token"
-  [{:keys [consumer-key consumer-secret] :as credentials}]
+  [{:keys [consumer-key consumer-secret]}]
   (-> {:request-method :post
        :url "https://api.twitter.com/oauth2/token"
        :form-params {"grant_type" "client_credentials"}

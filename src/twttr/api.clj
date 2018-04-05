@@ -5,8 +5,7 @@
             [aleph.http :as http]
             [manifold.deferred :as d]
             [twttr.middleware :refer [wrap-rest wrap-stream wrap-auth]]
-            [twttr.endpoints :as endpoints]
-            [twttr.auth :refer [auth-header]]))
+            [twttr.endpoints :as endpoints]))
 
 (defn- parse-body
   "Parse the HTTP response `body` as JSON or a string, depending on the 'content-type' header"
