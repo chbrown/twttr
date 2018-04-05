@@ -1,5 +1,6 @@
 (ns twttr.api
   (:require [clojure.string :as str]
+            [clojure.java.io :as io]
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
@@ -7,25 +8,50 @@
             [twttr.endpoints :as endpoints]
             [twttr.auth :refer [auth-header]]))
 
-(defn- ex-twitter
-  "read an error response into a string error message"
+(defn- parse-body
+  "Parse the HTTP response `body` as JSON or a string, depending on the 'content-type' header"
+  [body headers]
+  (let [{:strs [content-type]} headers]
+    (if (str/starts-with? content-type "application/json")
+      (json/read (io/reader body) :key-fn keyword :eof-error? false)
+      (str/trim (slurp body)))))
+
+(defmulti http-message
+  "Format a human-readable message describing a HTTP response from the Twitter API.
+  https://developer.twitter.com/en/docs/basics/response-codes"
+  (fn [response] (:status response)))
+
+(defmethod http-message 420
   [response]
-  (let [response (update response :body slurp)
-        body (try
-               (json/read-str (:body response) :key-fn keyword)
-               ; java.lang.Exception: JSON error
-               (catch Exception _
-                 (:body response)))
-        first-error (or (first (:errors body)) (:error body))
-        message-parts (list "Twitter API error response"
-                            (str "(#" (get first-error :code "N/A") ")")
-                            (when (= 429 (:status response))
-                              (str "Rate limit exceeded; next reset at "
-                                   (get-in response [:headers :x-rate-limit-reset])
-                                   " (UTC epoch seconds)"))
-                            (get first-error :message first-error)
-                            (:request body))]
-    (ex-info (->> message-parts (remove nil?) (str/join " ")) response)))
+  (str "Enhance Your Calm: "
+       "the application is being rate limited for making too many requests. "
+       (:body response)))
+
+(defmethod http-message 429
+  [response]
+  ; the following *-time variables are java.lang.Long timestamps represented as epoch seconds
+  (let [reset-time (Long/parseLong (get-in response [:headers "x-rate-limit-reset"]))
+        now-time (quot (System/currentTimeMillis) 1000)
+        reset-instant (java.time.Instant/ofEpochSecond reset-time)]
+    (str "Too Many Requests: "
+         "the application's rate limit has been exhausted for the requested resource. "
+         "The rate limit will be reset in " (- reset-time now-time) " seconds, "
+         "at " (str reset-instant))))
+
+(defmethod http-message :default
+  [response]
+  (if-let [errors (get-in response [:body :errors])]
+    (str/join "; " (map (fn [{:keys [message code]}] (format "%s (code=%d)" message code)) errors))
+    (:body response)))
+
+(defn- ex-twitter
+  [response]
+  (let [response (update response :body parse-body (:headers response))
+        explanation (http-message response)
+        msg (str "Twitter API Error: "
+                 "HTTP " (:status response) " "
+                 explanation)]
+    (ex-info msg response)))
 
 (defn request-endpoint
   "Prepare and send an HTTP request to the Twitter API, signing with `credentials`
