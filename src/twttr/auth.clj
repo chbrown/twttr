@@ -9,7 +9,7 @@
             [oauth.signature :refer [url-encode]]))
 
 (defprotocol Credentials
-  (auth-header [this request-method request-uri query]
+  (auth-header [this request-method request-uri request-params]
     "Generate the string value for an Authorization HTTP header"))
 
 (defn- map-values
@@ -57,7 +57,7 @@
 
 (defrecord UserCredentials [consumer-key consumer-secret user-token user-token-secret]
   Credentials
-  (auth-header [_ request-method request-uri query]
+  (auth-header [_ request-method request-uri request-params]
     (-> (oauth/make-consumer consumer-key
                              consumer-secret
                              "https://twitter.com/oauth/request_token"
@@ -65,7 +65,7 @@
                              "https://twitter.com/oauth/authorize"
                              :hmac-sha1)
         ; this will throw a NullPointerException if the consumer-key or -secret is nil
-        (oauth/credentials user-token user-token-secret request-method request-uri query)
+        (oauth/credentials user-token user-token-secret request-method request-uri request-params)
         (oauth/authorization-header "Twitter API"))))
 
 ; overwrite defrecord-supplied constructor with version adding pre-conditions
