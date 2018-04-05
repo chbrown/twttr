@@ -48,10 +48,10 @@
   calling auth-header on the *Credentials instance `credentials`."
   [req credentials]
   {:pre [(satisfies? auth/Credentials credentials)]}
-  (let [{:keys [request-method scheme server-name uri query-params]} req
+  (let [{:keys [request-method scheme server-name uri form-params query-params]} req
         ; Generate the full URL, except query-params, for the given request.
         request-uri (str (name scheme) "://" server-name uri)
-        authorization (auth/auth-header credentials request-method request-uri query-params)]
+        authorization (auth/auth-header credentials request-method request-uri (merge form-params query-params))]
     (assoc-in req [:headers :Authorization] authorization)))
 
 (defn wrap-auth
