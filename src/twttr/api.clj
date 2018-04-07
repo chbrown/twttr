@@ -5,7 +5,7 @@
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [twttr.middleware :refer [wrap-rest wrap-stream wrap-auth]]))
+            [twttr.middleware :refer [wrap-json wrap-stream wrap-auth]]))
 
 (defn- parse-body
   "Parse the HTTP response `body` as JSON or a string, depending on the 'content-type' header"
@@ -88,7 +88,7 @@
         ; adding an extension for :json requests
         uri (str version path (when (= format :json) ".json"))
         params-key (if (#{:post :put} request-method) :form-params :query-params)
-        middleware (if (str/ends-with? server-name "stream.twitter.com") wrap-stream wrap-rest)]
+        middleware (if (str/ends-with? server-name "stream.twitter.com") wrap-stream wrap-json)]
     (assoc endpoint
       :uri uri
       params-key params

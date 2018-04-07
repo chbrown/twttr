@@ -11,7 +11,7 @@
 ; potentially modifies that request, runs request through the given handler to get a response,
 ; and then returns the response, potentially after modifying it.
 
-(defn- parse-rest
+(defn- parse-json
   "Parse the body of `response` (potentially empty) as a single JSON document,
   and re-attach the full response as metadata."
   [response]
@@ -19,11 +19,11 @@
                  (io/reader)
                  (json/read :key-fn keyword :eof-error? false)) response))
 
-(defn wrap-rest
+(defn wrap-json
   "REST middleware for parsing response body as single JSON document"
   [handler]
-  (fn rest-middleware-handler [request]
-    (d/chain (handler request) parse-rest)))
+  (fn json-middleware-handler [request]
+    (d/chain (handler request) parse-json)))
 
 (defn- parse-stream
   "Parse the body of `response` as a sequence of lines of JSON, ignoring empty lines
