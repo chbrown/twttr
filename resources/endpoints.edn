@@ -1,0 +1,229 @@
+[;; Sections below are derived from the sidebar at https://developer.twitter.com/en/docs
+
+ ;; OAuth
+
+ ;; Twitter uses OAuth to provide authorized access to its API.
+ ;; https://developer.twitter.com/en/docs/basics/authentication/api-reference
+
+ {:path "/oauth/authenticate"      :version nil :format nil}
+ {:path "/oauth/authorize"         :version nil :format nil}
+ {:path "/oauth/access_token"      :version nil :format nil :request-method :post}
+ {:path "/oauth/request_token"     :version nil :format nil :request-method :post}
+ {:path "/oauth2/token"            :version nil :format nil :request-method :post}
+ {:path "/oauth2/invalidate_token" :version nil :format nil :request-method :post}
+
+ ;; Accounts and users
+
+ ;; Subscribe to your account activity
+ ;; https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference
+ {:path "/site" :server-name "sitestream.twitter.com" :name "site-stream"}
+ {:path "/user" :server-name "userstream.twitter.com" :name "user-stream"}
+ {:path "/account_activity/webhooks/:webhook_id/subscriptions" :request-method :delete}
+ {:path "/account_activity/webhooks/:webhook_id"               :request-method :delete}
+ {:path "/account_activity/webhooks/:webhook_id/subscriptions"}
+ {:path "/account_activity/webhooks"}
+ {:path "/account_activity/webhooks/:webhook_id/subscriptions" :request-method :post}
+ {:path "/account_activity/webhooks"                           :request-method :post}
+ {:path "/account_activity/webhooks/:webhook_id"               :request-method :put}
+ {:path "/account_activity/webhooks/:webhook_id/subscriptions/list"}
+
+ ;; Manage account settings and profile
+ ;; https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference
+ ; are these endpoints deleted? deprecated? invalid?:
+ ; POST /account/update_profile_colors
+ ; POST /account/update_delivery_device
+ {:path "/account/settings"}
+ {:path "/account/verify_credentials"}
+ {:path "/users/profile_banner"}
+ {:path "/account/remove_profile_banner"           :request-method :post}
+ {:path "/account/settings"                        :request-method :post}
+ {:path "/account/update_profile"                  :request-method :post}
+ {:path "/account/update_profile_background_image" :request-method :post}
+ {:path "/account/update_profile_banner"           :request-method :post}
+ {:path "/account/update_profile_image"            :request-method :post}
+ {:path "/saved_searches/list"}
+ {:path "/saved_searches/show/:id"}
+ {:path "/saved_searches/create"                   :request-method :post}
+ {:path "/saved_searches/destroy/:id"              :request-method :post}
+
+ ;; Mute, block and report users
+ ;; https://developer.twitter.com/en/docs/accounts-and-users/mute-block-report-users/api-reference
+ {:path "/blocks/ids"}
+ {:path "/blocks/list"}
+ {:path "/mutes/users/ids"}
+ {:path "/mutes/users/list"}
+ {:path "/blocks/create"       :request-method :post}
+ {:path "/blocks/destroy"      :request-method :post}
+ {:path "/mutes/users/create"  :request-method :post}
+ {:path "/mutes/users/destroy" :request-method :post}
+ {:path "/users/report_spam"   :request-method :post}
+
+ ;; Follow, search, and get users
+ ;; https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/api-reference
+ ; Are these deprecated / missing?:
+ ; GET users/contributees
+ ; GET users/contributors
+ {:path "/followers/ids"}
+ {:path "/followers/list"}
+ {:path "/friends/ids"}
+ {:path "/friends/list"}
+ {:path "/friendships/incoming"}
+ {:path "/friendships/lookup"}
+ {:path "/friendships/no_retweets/ids"}
+ {:path "/friendships/outgoing"}
+ {:path "/friendships/show"}
+ {:path "/users/lookup"}
+ {:path "/users/search"}
+ {:path "/users/show"}
+ {:path "/users/suggestions"}
+ {:path "/users/suggestions/:slug"}
+ {:path "/users/suggestions/:slug/members"}
+ {:path "/friendships/create"  :request-method :post}
+ {:path "/friendships/destroy" :request-method :post}
+ {:path "/friendships/update"  :request-method :post}
+
+ ;; Create and manage lists
+ ;; https://developer.twitter.com/en/docs/accounts-and-users/create-manage-lists/api-reference
+ {:path "/lists/list"}
+ {:path "/lists/show"}
+ {:path "/lists/statuses"}
+ {:path "/lists/create"              :request-method :post}
+ {:path "/lists/update"              :request-method :post}
+ {:path "/lists/destroy"             :request-method :post}
+ {:path "/lists/ownerships"}
+ {:path "/lists/subscriptions"}
+ {:path "/lists/memberships"}
+ {:path "/lists/members"}
+ {:path "/lists/members/show"}
+ {:path "/lists/members/create"      :request-method :post}
+ {:path "/lists/members/create_all"  :request-method :post}
+ {:path "/lists/members/destroy"     :request-method :post}
+ {:path "/lists/members/destroy_all" :request-method :post}
+ {:path "/lists/subscribers"}
+ {:path "/lists/subscribers/show"}
+ {:path "/lists/subscribers/create"  :request-method :post}
+ {:path "/lists/subscribers/destroy" :request-method :post}
+
+ ;; Tweets
+
+ ;; Post, retrieve and engage with Tweets
+ ;; https://developer.twitter.com/en/docs/tweets/post-and-engage/api-reference/post-statuses-update
+ {:path "/statuses/update"         :request-method :post}
+ {:path "/statuses/destroy/:id"    :request-method :post}
+ {:path "/statuses/show/:id"}
+ {:path "/statuses/oembed"}
+ {:path "/statuses/lookup"}
+ {:path "/statuses/retweet/:id"    :request-method :post}
+ {:path "/statuses/unretweet/:id"  :request-method :post}
+ {:path "/statuses/retweets/:id"}
+ {:path "/statuses/retweets_of_me"}
+ {:path "/statuses/retweeters/ids"}
+ {:path "/favorites/create"        :request-method :post}
+ {:path "/favorites/destroy"       :request-method :post}
+ {:path "/favorites/list"}
+
+ ;; Get Tweet timelines
+ ;; https://developer.twitter.com/en/docs/tweets/timelines/api-reference
+ {:path "/statuses/home_timeline"}
+ {:path "/statuses/mentions_timeline"}
+ {:path "/statuses/user_timeline"}
+
+ ;; Curate a collection of Tweets
+ ;; https://developer.twitter.com/en/docs/tweets/curate-a-collection/api-reference
+ {:path "/collections/entries"}
+ {:path "/collections/list"}
+ {:path "/collections/show"}
+ {:path "/collections/create"         :request-method :post}
+ {:path "/collections/destroy"        :request-method :post}
+ {:path "/collections/entries/add"    :request-method :post}
+ {:path "/collections/entries/curate" :request-method :post}
+ {:path "/collections/entries/move"   :request-method :post}
+ {:path "/collections/entries/remove" :request-method :post}
+ {:path "/collections/update"         :request-method :post}
+
+ ;; Search Tweets
+ ;; https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets
+ {:path "/search/tweets"}
+
+ ;; Filter realtime Tweets
+ ;; https://developer.twitter.com/en/docs/tweets/filter-realtime/api-reference
+ {:server-name "stream.twitter.com" :path "/statuses/filter" :request-method :post}
+
+ ;; Sample realtime Tweets
+ ;; https://developer.twitter.com/en/docs/tweets/sample-realtime/api-reference/get-statuses-sample
+ {:server-name "stream.twitter.com" :path "/statuses/sample" :request-method :get}
+
+ ;; Direct Messages
+
+ ;; Sending and receiving events
+ ;; https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference
+ {:path "/direct_messages/destroy"    :request-method :post}
+ {:path "/direct_messages/events/show"}
+ {:path "/direct_messages/events/list"}
+ {:path "/direct_messages/events/new" :request-method :post}
+ {:path "/direct_messages/show"}
+ {:path "/direct_messages"}
+ {:path "/direct_messages/sent"}
+ {:path "/direct_messages/new"        :request-method :post}
+
+ ;; Welcome Messages
+ ;; https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference
+ {:path "/direct_messages/welcome_messages/destroy"       :request-method :delete}
+ {:path "/direct_messages/welcome_messages/rules/destroy" :request-method :delete}
+ {:path "/direct_messages/welcome_messages/show"}
+ {:path "/direct_messages/welcome_messages/rules/show"}
+ {:path "/direct_messages/welcome_messages/rules/list"}
+ {:path "/direct_messages/welcome_messages/list"}
+ {:path "/direct_messages/welcome_messages/new"           :request-method :post}
+ {:path "/direct_messages/welcome_messages/rules/new"     :request-method :post}
+
+ ;; Typing indicator and read receipts
+ ;; https://developer.twitter.com/en/docs/direct-messages/typing-indicator-and-read-receipts/api-reference/new-typing-indicator
+ {:path "/direct_messages/mark_read"       :request-method :post}
+ {:path "/direct_messages/indicate_typing" :request-method :post}
+
+ ;; Media
+
+ ;; Upload media
+ ;; https://developer.twitter.com/en/docs/media/upload-media/api-reference
+ {:path "/media/upload"          :request-method :post}
+ ; {:path "/media/upload"          :request-method :get}
+ {:path "/media/metadata/create" :request-method :post}
+
+ ;; Trends
+
+ ;; Get trends near a location
+ ;; https://developer.twitter.com/en/docs/trends/trends-for-location/api-reference
+ {:path "/trends/place"}
+
+ ;; Get locations with trending topics
+ ;; https://developer.twitter.com/en/docs/trends/locations-with-trending-topics/api-reference
+ {:path "/trends/available"}
+ {:path "/trends/closest"}
+
+ ;; Geo
+
+ ;; Get information about a place
+ ;; https://developer.twitter.com/en/docs/geo/place-information/api-reference
+ {:path "/geo/id/:place_id"}
+
+ ;; Get places near a location
+ ;; https://developer.twitter.com/en/docs/geo/places-near-location/api-reference
+ ; are these deprecated/etc?:
+ ; GET /geo/similar_places
+ ; POST /geo/place
+ {:path "/geo/reverse_geocode"}
+ {:path "/geo/search"}
+
+ ;; Developer utilities
+
+ ;; Get app rate limit status
+ {:path "/application/rate_limit_status"}
+ ;; Get Twitter configuration details
+ {:path "/help/configuration"}
+ ;; Get Twitter supported languages
+ {:path "/help/languages"}
+ ;; Get Twitter's terms of service
+ {:path "/help/tos"}
+ ;; Get Twitter's privacy policy
+ {:path "/help/privacy"}]

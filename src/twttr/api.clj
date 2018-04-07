@@ -1,11 +1,11 @@
 (ns twttr.api
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
+            [clojure.edn :as edn]
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [twttr.middleware :refer [wrap-rest wrap-stream wrap-auth]]
-            [twttr.endpoints :as endpoints]))
+            [twttr.middleware :refer [wrap-rest wrap-stream wrap-auth]]))
 
 (defn- parse-body
   "Parse the HTTP response `body` as JSON or a string, depending on the 'content-type' header"
@@ -52,37 +52,76 @@
                  explanation)]
     (ex-info msg response)))
 
+;; endpoint handling
+
+(def endpoint-defaults
+  {:scheme :https
+   :request-method :get
+   :server-name "api.twitter.com"
+   :version "/1.1"
+   :format :json})
+
+(def endpoints
+  (with-open [r (java.io.PushbackReader. (io/reader (io/resource "endpoints.edn")))]
+    (for [endpoint (edn/read r)]
+      (merge endpoint-defaults endpoint))))
+
+(defn- params-seq
+  "Return a sequence of the placeholders in `endpoint`'s :path, as keywords."
+  ; (E.g., to distinguish querystring params from path params.)
+  [path]
+  (->> path (re-seq #":(\w+)") (map second) (map keyword)))
+
+(defn- params-path-reducer
+  "Replace named placeholder (`path-param`) in the pattern string `path`
+  with the corresponding value from `params`, simultaneously removing it from `params`."
+  [[params path] path-param]
+  [(dissoc params path-param)
+   (str/replace path (str path-param) (str (get params path-param)))])
+
+(defn- prepare-request
+  [endpoint params]
+  (let [{:keys [request-method server-name version path format]} endpoint
+        path-params (params-seq path)
+        [params path] (reduce params-path-reducer [params path] path-params)
+        ; Prepare the :uri value of a Ring request map from `endpoint`,
+        ; adding an extension for :json requests
+        uri (str version path (when (= format :json) ".json"))
+        params-key (if (#{:post :put} request-method) :form-params :query-params)
+        middleware (if (str/ends-with? server-name "stream.twitter.com") wrap-stream wrap-rest)]
+    (assoc endpoint
+      :uri uri
+      params-key params
+      :middleware middleware)))
+
+;; HTTP request
+
 (defn request-endpoint
   "Prepare and send an HTTP request to the Twitter API, signing with `credentials`
   (via OAuth as directed by the wrap-auth middleware), returning a deferred HTTP response.
   Options map:
-  * :params - mapping from Endpoint :path placeholders to values,
+  * :params - mapping from :path placeholders to values,
               along with additional query parameters"
   ([endpoint credentials]
    (request-endpoint endpoint credentials {}))
   ([endpoint credentials {:keys [params]}]
-   {:pre [(endpoints/Endpoint? endpoint)]}
-   (let [{:keys [server-name request-method]} endpoint
-         params-key (if (= request-method :post) :form-params :query-params)
-         non-path-params (apply dissoc params (endpoints/path-placeholders endpoint))
-         wrap-body (if (endpoints/streaming? endpoint) wrap-stream wrap-rest)
-         middleware (fn [handler] (-> handler (wrap-auth credentials) wrap-body))]
-     ; Prepare and send the HTTP request, signing with OAuth as directed by the wrap-auth middleware.
-     ; we cannot add fields to #twttr.endpoints.Endpoint{...} to flesh out a ring request,
-     ; since aleph expects (ring) requests that are plain maps, and thus work as functions,
-     ; which records do not (for... reasons)
-     (-> {:request-method request-method
-          :scheme :https
-          :server-name server-name
-          :uri (endpoints/uri endpoint params)
-          params-key non-path-params
-          :middleware middleware}
-         (http/request)
-         (d/catch clojure.lang.ExceptionInfo
-                  (fn [ex]
-                    (throw (ex-twitter (ex-data ex)))))))))
+   ; Prepare and send the HTTP request, signing with OAuth as directed by the wrap-auth middleware.
+   (-> endpoint
+       (prepare-request params)
+       (update :middleware comp #(wrap-auth % credentials))
+       (http/request)
+       (d/catch clojure.lang.ExceptionInfo
+                (fn [ex]
+                  (throw (ex-twitter (ex-data ex))))))))
 
-(doseq [endpoint endpoints/all]
-  (intern *ns* (symbol (endpoints/name endpoint))
+;; helper functions
+
+(defn- path->name
+  "chop off the leading '/' and replace all non-word characters with '-'s"
+  [path]
+  (-> path (subs 1) (str/replace #"[^a-zA-Z]+" "-")))
+
+(doseq [endpoint endpoints]
+  (intern *ns* (symbol (or (:name endpoint) (path->name (:path endpoint))))
           (fn [credentials & {:as options}]
             (deref (request-endpoint endpoint credentials options)))))
