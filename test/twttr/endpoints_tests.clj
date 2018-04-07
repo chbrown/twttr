@@ -1,6 +1,6 @@
 (ns twttr.endpoints-tests
   (:require [clojure.test :refer [deftest is]]
-            [twttr.endpoints :as endpoints]))
+            [twttr.api :as api]))
 
 (def api-reference-index
   "This listing is drawn from https://developer.twitter.com/en/docs/api-reference-index"
@@ -147,4 +147,4 @@
 
 (deftest test-endpoints-comprehensiveness
   (is (= (reduce into #{} (mapcat vals [api-reference-index api-extra api-oauth]))
-         (set (map :path endpoints/all)))))
+         (set (map :path api/endpoints)))))
