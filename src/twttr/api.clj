@@ -2,18 +2,9 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
-            [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [twttr.middleware :refer [wrap-json wrap-stream wrap-auth]]))
-
-(defn- parse-body
-  "Parse the HTTP response `body` as JSON or a string, depending on the 'content-type' header"
-  [body headers]
-  (let [{:strs [content-type]} headers]
-    (if (str/starts-with? content-type "application/json")
-      (json/read (io/reader body) :key-fn keyword :eof-error? false)
-      (str/trim (slurp body)))))
+            [twttr.middleware :refer [parse-body wrap-json wrap-stream wrap-auth]]))
 
 (defmulti http-message
   "Format a human-readable message describing a HTTP response from the Twitter API.

@@ -1,10 +1,19 @@
 (ns twttr.middleware
-  (:require [clojure.data.json :as json]
+  (:require [clojure.string :as str]
+            [clojure.data.json :as json]
             [clojure.java.io :as io]
 
             [twttr.auth :as auth]
             [byte-streams :as bs]
             [manifold.deferred :as d]))
+
+(defn parse-body
+  "Parse the HTTP response `body` as JSON or a string, depending on the 'content-type' header"
+  [body headers]
+  (let [{:strs [content-type]} headers]
+    (if (str/starts-with? content-type "application/json")
+      (json/read (io/reader body) :key-fn keyword :eof-error? false)
+      (str/trim (slurp body)))))
 
 ; The argument to middleware should be a function that takes a handler
 ; (which turns a request into a response), and returns a function which takes a request,
