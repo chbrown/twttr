@@ -9,7 +9,7 @@
 (defmulti http-message
   "Format a human-readable message describing a HTTP response from the Twitter API.
   https://developer.twitter.com/en/docs/basics/response-codes"
-  (fn [response] (:status response)))
+  :status)
 
 (defmethod http-message 420
   [response]
