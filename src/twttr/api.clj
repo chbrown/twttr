@@ -4,7 +4,7 @@
             [clojure.edn :as edn]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [twttr.middleware :refer [parse-body wrap-json wrap-stream wrap-auth]]))
+            [twttr.middleware :refer [parse-body wrap-body wrap-auth]]))
 
 (defmulti http-message
   "Format a human-readable message describing a HTTP response from the Twitter API.
@@ -50,7 +50,8 @@
    :request-method :get
    :server-name "api.twitter.com"
    :version "/1.1"
-   :format :json})
+   :format :json
+   :middleware wrap-body})
 
 (def endpoints
   (with-open [r (java.io.PushbackReader. (io/reader (io/resource "endpoints.edn")))]
@@ -72,18 +73,16 @@
 
 (defn- prepare-request
   [endpoint params]
-  (let [{:keys [request-method server-name version path format]} endpoint
+  (let [{:keys [request-method version path format]} endpoint
         path-params (params-seq path)
         [params path] (reduce params-path-reducer [params path] path-params)
         ; Prepare the :uri value of a Ring request map from `endpoint`,
         ; adding an extension for :json requests
         uri (str version path (when (= format :json) ".json"))
-        params-key (if (#{:post :put} request-method) :form-params :query-params)
-        middleware (if (str/ends-with? server-name "stream.twitter.com") wrap-stream wrap-json)]
+        params-key (if (#{:post :put} request-method) :form-params :query-params)]
     (assoc endpoint
       :uri uri
-      params-key params
-      :middleware middleware)))
+      params-key params)))
 
 ;; HTTP request
 
