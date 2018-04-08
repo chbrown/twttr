@@ -89,14 +89,15 @@
 (defn request-endpoint
   "Prepare and send an HTTP request to the Twitter API, signing with `credentials`
   (via OAuth as directed by the wrap-auth middleware), returning a deferred HTTP response.
-  Options map:
-  * :params - mapping from :path placeholders to values,
-              along with additional query parameters"
+  The `request-options` map is merged on top of `endpoint`, allowing custom middleware
+  or paths to be set directly, with the exception of :params, which is treating specially.
+  (:params request-options) is a mapping from :path placeholders to values, along with
+  additional query/form parameters, which are auto-adapted based on the request-method."
   ([endpoint credentials]
    (request-endpoint endpoint credentials {}))
-  ([endpoint credentials {:keys [params]}]
+  ([endpoint credentials {:keys [params] :as request-options}]
    ; Prepare and send the HTTP request, signing with OAuth as directed by the wrap-auth middleware.
-   (-> endpoint
+   (-> (merge endpoint (dissoc request-options :params))
        (prepare-request params)
        (update :middleware comp #(wrap-auth % credentials))
        (http/request)
