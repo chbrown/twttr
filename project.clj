@@ -1,4 +1,4 @@
-(defproject twttr "3.0.0-beta4"
+(defproject twttr "3.0.0"
   :description "Twitter API client supporting REST, streaming, and OAuth"
   :url "https://github.com/chbrown/twttr"
   :license {:name "Eclipse Public License"
