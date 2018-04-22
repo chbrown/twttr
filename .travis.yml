@@ -1,0 +1,7 @@
+language: clojure
+jdk:
+  - oraclejdk8
+lein: 2.8.1
+script:
+  - lein do clean, test, cloverage --coveralls
+  - curl -F 'json_file=@target/coverage/coveralls.json' 'https://coveralls.io/api/v1/jobs'
