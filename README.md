@@ -13,7 +13,7 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 
 `twttr` is on [Clojars](https://clojars.org/twttr):
 
-    [twttr "2.0.0"]
+    [twttr "3.0.0"]
 
 
 ## Documentation
