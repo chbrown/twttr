@@ -1,6 +1,8 @@
 # twttr
 
 [![Clojars Project](https://img.shields.io/clojars/v/twttr.svg)](https://clojars.org/twttr)
+[![Travis CI build status](https://travis-ci.org/chbrown/twttr.svg?branch=master)](https://travis-ci.org/chbrown/twttr)
+[![Coverage status on Coveralls](https://coveralls.io/repos/github/chbrown/twttr/badge.svg?branch=master)](https://coveralls.io/github/chbrown/twttr?branch=master)
 
 Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/aleph) and [`clj-oauth`](https://github.com/mattrepl/clj-oauth), supporting [REST](https://dev.twitter.com/rest/reference) and [Streaming](https://dev.twitter.com/streaming/public) endpoints.
 
