@@ -140,3 +140,34 @@
     "Find the freshest credentials from the collection `this` for requesting `path`")
   (update! [this credentials path rate-limit-status]
     "Update the `rate-limit-status` state associated with `credentials` for requesting `path`"))
+
+(defrecord MemoryCredentials [coll-rate-limit-statuses]
+  ; `coll-rate-limit-statuses` is an atom mapping {User,App}Credentials records
+  ; to `rate-limit-statuses` maps, which in turn are mappings
+  ; from rate-limited Twitter API paths (like "/users/lookup") to RateLimitStatus records,
+  ; (which are fundamentally just a map like {:limit 75, :remaining 70, :reset 1513290428})
+  StatefulCredentials
+  (find! [_ path]
+    (let [; current-epoch is the number of seconds, like Twitter's 'reset' header value
+          current-epoch (quot (System/currentTimeMillis) 1000)
+          ; used-calls return the number of used calls to `path`;
+          ; smaller values indicate newer/fresher credentials;
+          ; 0 indicates never-used credentials (as far as we know)
+          used-calls (fn used-calls [[credentials rate-limit-statuses]]
+                       (if-let [{:keys [limit remaining reset]} (get rate-limit-statuses path)]
+                         (if (> current-epoch reset)
+                           0
+                           (- limit remaining))
+                         0))]
+      (key (apply min-key used-calls @coll-rate-limit-statuses))))
+  ; `credentials` is a key from the `coll-rate-limit-statuses` atom mapping,
+  ; and `rate-limit-status` is a RateLimitStatus record
+  (update! [_ credentials path rate-limit-status]
+    (swap! coll-rate-limit-statuses assoc-in [credentials path] rate-limit-status)))
+
+(defn coll->MemoryCredentials
+  "Create a new MemoryCredentials record from a flat sequence of {User,App}Credentials records."
+  [credentials-coll]
+  (-> (zipmap credentials-coll (repeat nil))
+      (atom)
+      (->MemoryCredentials)))
