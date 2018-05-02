@@ -134,3 +134,9 @@
   (->RateLimitStatus (Integer/parseInt x-rate-limit-limit)
                      (Integer/parseInt x-rate-limit-remaining)
                      (Integer/parseInt x-rate-limit-reset)))
+
+(defprotocol StatefulCredentials
+  (find! [this path]
+    "Find the freshest credentials from the collection `this` for requesting `path`")
+  (update! [this credentials path rate-limit-status]
+    "Update the `rate-limit-status` state associated with `credentials` for requesting `path`"))
