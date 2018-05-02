@@ -118,3 +118,19 @@
      (->> (read-csv (line-seq reader) column-mapping)
           (map map->Credentials)
           (doall)))))
+
+; The RateLimitStatus record keeps track of the rate-limiting state
+;   for a specific application (set of credentials),
+;   for a specific Twitter API endpoint (path).
+; It doesn't need to be a record, but we might accrue a lot of them.
+; Whenever we request an endpoint for an application,
+;   the response conveys an update to this record.
+(defrecord RateLimitStatus [limit remaining reset])
+
+(defn headers->RateLimitStatus
+  "Parse Twitter response headers as a map with integer values,
+  without the 'x-rate-limit-' prefix."
+  [{:strs [x-rate-limit-limit x-rate-limit-remaining x-rate-limit-reset]}]
+  (->RateLimitStatus (Integer/parseInt x-rate-limit-limit)
+                     (Integer/parseInt x-rate-limit-remaining)
+                     (Integer/parseInt x-rate-limit-reset)))
