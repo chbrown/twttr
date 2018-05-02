@@ -3,6 +3,7 @@
   :url "https://github.com/chbrown/twttr"
   :license {:name "Eclipse Public License"
             :url "https://www.eclipse.org/legal/epl-v10.html"}
+  :deploy-repositories [["releases" :clojars]]
   :pom-addition [:developers [:developer
                               [:name "Christopher Brown"]
                               [:email "io@henrian.com"]]]
