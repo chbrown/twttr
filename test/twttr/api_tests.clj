@@ -5,6 +5,10 @@
 
 (def current-user (delay (account-verify-credentials user-credentials)))
 
+(defn close
+  [^java.io.Closeable stream]
+  (.close stream))
+
 (defn http-ok?
   "checks if the response's HTTP status code is 200 (OK)"
   [body]
@@ -160,19 +164,19 @@
   (let [statuses (statuses-filter user-credentials :params {:track "Twitter"})]
     (Thread/sleep 1000)
     ; cancel the response so that we don't stall here forever
-    (-> statuses meta :body (.close))
+    (-> statuses meta :body close)
     (is (http-ok? statuses))
     (is (some? (first statuses)))))
 
 (deftest test-streaming-statuses-sample
   (let [statuses (statuses-sample user-credentials)]
     (Thread/sleep 1000)
-    (-> statuses meta :body (.close))
+    (-> statuses meta :body close)
     (is (http-ok? statuses))
     (is (some? (first statuses)))))
 
 (deftest test-user-streaming
   (let [statuses (user-stream user-credentials)]
-    (-> statuses meta :body (.close))
+    (-> statuses meta :body close)
     ; the test users don't get much in their streams...
     (is (http-ok? statuses))))
