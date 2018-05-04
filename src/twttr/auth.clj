@@ -130,7 +130,10 @@
 (defn headers->RateLimitStatus
   "Parse Twitter response headers as a map with integer values,
   without the 'x-rate-limit-' prefix."
-  [{:strs [x-rate-limit-limit x-rate-limit-remaining x-rate-limit-reset]}]
+  [{:strs [x-rate-limit-limit x-rate-limit-remaining x-rate-limit-reset]
+    :or   {x-rate-limit-limit     "999"
+           x-rate-limit-remaining "999"
+           x-rate-limit-reset     "0"}}]
   (->RateLimitStatus (Integer/parseInt x-rate-limit-limit)
                      (Integer/parseInt x-rate-limit-remaining)
                      (Integer/parseInt x-rate-limit-reset)))
