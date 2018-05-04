@@ -17,7 +17,8 @@
   `json-options` is passed directly on to json/read(-str), after the default of
   {:key-fn keyword}, and in the non-streaming case, {:eof-error? false}."
   [body headers & json-options]
-  (let [{:strs [content-type transfer-encoding]} headers]
+  (let [{:strs [content-type transfer-encoding]
+         :or   {content-type ""}} headers]
     (if (str/starts-with? content-type "application/json")
       (if (= transfer-encoding "chunked")
         ; newline-delimited JSON
