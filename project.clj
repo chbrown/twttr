@@ -10,7 +10,6 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/tools.logging "0.4.1"]
-                 [ch.qos.logback/logback-classic "1.2.3"]
                  [aleph "0.4.4"]
                  [byte-streams "0.2.3"]
                  [clj-oauth "1.5.5"]]
@@ -19,6 +18,8 @@
                       :codox {:exclude-vars nil
                               :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}}
              :dev {:plugins [[lein-cloverage "1.0.10"]]
+                   :dependencies [[ch.qos.logback/logback-classic "1.2.3"]]
+                   :resource-paths ["dev-resources"]
                    :source-paths ["test"]}
              :repl {:dependencies [[org.clojure/tools.namespace "0.3.0-alpha3"]]
                     :source-paths ["dev"]}})
