@@ -5,8 +5,7 @@
             [clojure.data.json :as json]
             [aleph.http :as http]
             [manifold.deferred :as d]
-            [oauth.client :as oauth]
-            [oauth.signature :refer [url-encode]]))
+            [oauth.client :as oauth]))
 
 (defprotocol Credentials
   (auth-header [this request-method request-uri request-params]
@@ -16,6 +15,15 @@
   "Contruct a new map with all the values of the map kvs passed through f"
   [f kvs]
   (into {} (for [[k v] kvs] [k (f v)])))
+
+(defn- url-encode
+  "Basically identical to oauth.signature/url-encode; starts with Java's built-in
+  application/x-www-form-urlencoded format, then layers RFC-3986 compliance on top."
+  [url-string]
+  (-> (java.net.URLEncoder/encode url-string "UTF-8")
+      (str/replace "+" "%20")
+      (str/replace "*" "%2A")
+      (str/replace "%7E" "~")))
 
 ;; app
 
