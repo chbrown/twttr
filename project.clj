@@ -13,10 +13,10 @@
                  [aleph "0.4.4"]
                  [byte-streams "0.2.3"]
                  [clj-oauth "1.5.5"]]
+  :codox {:exclude-vars nil
+          :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}
   :profiles {:uberjar {:aot :all}
-             :deploy {:plugins [[lein-codox "0.10.3"]]
-                      :codox {:exclude-vars nil
-                              :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}}
+             :deploy {:plugins [[lein-codox "0.10.3"]]}
              :dev {:plugins [[lein-cloverage "1.0.10"]]
                    :dependencies [[ch.qos.logback/logback-classic "1.2.3"]]
                    :resource-paths ["dev-resources"]
