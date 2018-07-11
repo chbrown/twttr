@@ -13,12 +13,14 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 
 `twttr` is on [Clojars](https://clojars.org/twttr):
 
-    [twttr "3.0.0"]
+```edn
+[twttr "3.2.0"]
+```
 
 
 ## Documentation
 
-[Auto-generated Codox pages](https://chbrown.github.io/twttr/)
+[Auto-generated Codox pages](https://chbrown.github.io/twttr/master/)
 
 
 ## Example
@@ -70,13 +72,13 @@ export ACCESS_TOKEN_SECRET=jsVg1HFAKEFAKEFAKEFAKEFAKEFAKE4yfOLC5cXA9fcXr
 
 Then run `lein test`, which can take a minute since many of the tests involve calling the Twitter API and waiting for an appropriate response. If all tests completed successfully, the test output will end with a message like:
 
-    Ran 27 tests containing 70 assertions.
+    Ran 27 tests containing 68 assertions.
     0 failures, 0 errors.
 
 
 ## License
 
-Distributed under the Eclipse Public License, same as Clojure.
+Distributed under the [Eclipse Public License](https://www.eclipse.org/legal/epl-v10.html), same as Clojure.
 
-* Copyright (C) 2017 Christopher Brown
+* Copyright (C) 2017–2018 Christopher Brown
 * Copyright (C) 2011 [StreamScience](http://streamscience.co)
