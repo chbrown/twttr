@@ -113,6 +113,13 @@
   (-> path (subs 1) (str/replace #"[^a-zA-Z]+" "-")))
 
 (doseq [endpoint endpoints]
-  (intern *ns* (symbol (or (:name endpoint) (path->name (:path endpoint))))
-          (fn [credentials & {:as options}]
-            (deref (request-endpoint endpoint credentials options)))))
+  (let [url (str (name (:scheme endpoint)) "://" (:server-name endpoint)
+                 (:version endpoint) (:path endpoint) (when (= (:format endpoint) :json) ".json"))
+        method (str/upper-case (name (:request-method endpoint)))
+        doc (str "Call the Twitter endpoint: " method " " url
+                 "\n  adding `options-map` to the request and signing with `credentials`.")
+        metadata {:arglists '([credentials] [credentials & {:as options-map}]) :doc doc}
+        name (or (:name endpoint) (path->name (:path endpoint)))]
+    (intern *ns* (with-meta (symbol name) metadata)
+            (fn [credentials & {:as options}]
+              (deref (request-endpoint endpoint credentials options))))))
