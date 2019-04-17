@@ -118,8 +118,7 @@
                                                             :screen_name (:screen_name @current-user)})))))
 
 (deftest test-direct-messages
-  (is (http-ok? (direct-messages user-credentials)))
-  (is (http-ok? (direct-messages-sent user-credentials))))
+  (is (http-ok? (direct-messages-events-list user-credentials))))
 
 (deftest test-friendship
   (is (http-ok? (friendships-show user-credentials :params {:source_screen_name (:screen_name @current-user)

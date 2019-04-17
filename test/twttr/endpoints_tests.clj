@@ -12,11 +12,8 @@
             "/collections/entries"
             "/collections/list"
             "/collections/show"
-            "/direct_messages"
             "/direct_messages/events/list"
             "/direct_messages/events/show"
-            "/direct_messages/sent"
-            "/direct_messages/show"
             "/direct_messages/welcome_messages/list"
             "/direct_messages/welcome_messages/rules/list"
             "/direct_messages/welcome_messages/rules/show"
@@ -88,9 +85,7 @@
             "/collections/entries/move"
             "/collections/entries/remove"
             "/collections/update"
-            "/direct_messages/destroy"
             "/direct_messages/events/new"
-            "/direct_messages/new"
             "/direct_messages/welcome_messages/new"
             "/direct_messages/welcome_messages/rules/new"
             "/direct_messages/mark_read"
@@ -120,7 +115,8 @@
             "/statuses/unretweet/:id"
             "/statuses/update"
             "/users/report_spam"]
-   :delete ["/direct_messages/welcome_messages/destroy"
+   :delete ["/direct_messages/events/destroy"
+            "/direct_messages/welcome_messages/destroy"
             "/direct_messages/welcome_messages/rules/destroy"]})
 
 (def api-extra

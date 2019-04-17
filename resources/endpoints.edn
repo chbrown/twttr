@@ -155,14 +155,10 @@
 
  ;; Sending and receiving events
  ;; https://developer.twitter.com/en/docs/direct-messages/sending-and-receiving/api-reference
- {:path "/direct_messages/destroy"    :request-method :post}
+ {:path "/direct_messages/events/destroy" :request-method :delete}
  {:path "/direct_messages/events/show"}
  {:path "/direct_messages/events/list"}
- {:path "/direct_messages/events/new" :request-method :post}
- {:path "/direct_messages/show"}
- {:path "/direct_messages"}
- {:path "/direct_messages/sent"}
- {:path "/direct_messages/new"        :request-method :post}
+ {:path "/direct_messages/events/new"     :request-method :post}
 
  ;; Welcome Messages
  ;; https://developer.twitter.com/en/docs/direct-messages/welcome-messages/api-reference
