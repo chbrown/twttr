@@ -10,14 +10,14 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/tools.logging "0.4.1"]
-                 [aleph "0.4.4"]
-                 [byte-streams "0.2.3"]
+                 [aleph "0.4.6"]
+                 [byte-streams "0.2.4"]
                  [clj-oauth "1.5.5"]]
   :codox {:exclude-vars nil
           :source-uri "https://github.com/chbrown/twttr/blob/{version}/{filepath}#L{line}"}
   :profiles {:uberjar {:aot :all}
-             :deploy {:plugins [[lein-codox "0.10.3"]]}
-             :dev {:plugins [[lein-cloverage "1.0.10"]]
+             :deploy {:plugins [[lein-codox "0.10.6"]]}
+             :dev {:plugins [[lein-cloverage "1.1.1"]]
                    :dependencies [[ch.qos.logback/logback-classic "1.2.3"]]
                    :resource-paths ["dev-resources"]
                    :source-paths ["test"]}
