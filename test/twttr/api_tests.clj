@@ -174,9 +174,3 @@
     (-> statuses meta :body close)
     (is (http-ok? statuses))
     (is (some? (first statuses)))))
-
-(deftest test-user-streaming
-  (let [statuses (user-stream user-credentials)]
-    (-> statuses meta :body close)
-    ; the test users don't get much in their streams...
-    (is (http-ok? statuses))))

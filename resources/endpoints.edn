@@ -16,8 +16,6 @@
 
  ;; Subscribe to your account activity
  ;; https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference
- {:path "/site" :server-name "sitestream.twitter.com" :name "site-stream"}
- {:path "/user" :server-name "userstream.twitter.com" :name "user-stream"}
  {:path "/account_activity/webhooks/:webhook_id/subscriptions" :request-method :delete}
  {:path "/account_activity/webhooks/:webhook_id"               :request-method :delete}
  {:path "/account_activity/webhooks/:webhook_id/subscriptions"}

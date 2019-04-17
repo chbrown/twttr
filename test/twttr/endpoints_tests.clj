@@ -124,9 +124,7 @@
             "/direct_messages/welcome_messages/rules/destroy"]})
 
 (def api-extra
-  {:get    ["/site"
-            "/user"
-            "/account_activity/webhooks"
+  {:get    ["/account_activity/webhooks"
             "/account_activity/webhooks/:webhook_id/subscriptions"
             "/account_activity/webhooks/:webhook_id/subscriptions/list"
             "/statuses/sample"]
