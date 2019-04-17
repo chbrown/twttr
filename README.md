@@ -80,5 +80,5 @@ Then run `lein test`, which can take a minute since many of the tests involve ca
 
 Distributed under the [Eclipse Public License](https://www.eclipse.org/legal/epl-v10.html), same as Clojure.
 
-* Copyright (C) 2017–2018 Christopher Brown
+* Copyright (C) 2017–2019 Christopher Brown
 * Copyright (C) 2011 [StreamScience](http://streamscience.co)
