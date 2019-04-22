@@ -14,7 +14,7 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 `twttr` is on [Clojars](https://clojars.org/twttr):
 
 ```edn
-[twttr "3.2.2"]
+[twttr "3.2.3"]
 ```
 
 
@@ -31,7 +31,8 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
             [twttr.auth :refer [env->UserCredentials]]))
 
 ; read credentials from environment variables, namely:
-; CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, and ACCESS_TOKEN_SECRET
+; TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET,
+; TWITTER_ACCESS_TOKEN and TWITTER_ACCESS_TOKEN_SECRET
 (def creds (env->UserCredentials))
 
 ; the "https://api.twitter.com/1.1/users/show.json" Resource URL
@@ -64,10 +65,10 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 The tests require that credentials be provided via environment variables with the following names:
 
 ```sh
-export CONSUMER_KEY=l4VAFAKEFAKEFAKEpy7R7
-export CONSUMER_SECRET=dVnTimJtFAKEFAKEFAKEFAKEFAKEFAKEBVYnO91BR1G
-export ACCESS_TOKEN=195648015-OIHb87zuFAKEFAKEFAKEFAKEFAKEFAKEb5aLUMYo
-export ACCESS_TOKEN_SECRET=jsVg1HFAKEFAKEFAKEFAKEFAKEFAKE4yfOLC5cXA9fcXr
+export TWITTER_CONSUMER_KEY=l4VAFAKEFAKEFAKEpy7R7
+export TWITTER_CONSUMER_SECRET=dVnTimJtFAKEFAKEFAKEFAKEFAKEFAKEBVYnO91BR1G
+export TWITTER_ACCESS_TOKEN=195648015-OIHb87zuFAKEFAKEFAKEFAKEFAKEFAKEb5aLUMYo
+export TWITTER_ACCESS_TOKEN_SECRET=jsVg1HFAKEFAKEFAKEFAKEFAKEFAKE4yfOLC5cXA9fcXr
 ```
 
 Then run `lein test`, which can take a minute since many of the tests involve calling the Twitter API and waiting for an appropriate response. If all tests completed successfully, the test output will end with a message like:
