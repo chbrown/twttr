@@ -59,7 +59,11 @@
    (env->AppCredentials {:consumer-key    "CONSUMER_KEY"
                          :consumer-secret "CONSUMER_SECRET"}))
   ([env-mapping]
-   (map->AppCredentials (map-values #(System/getenv %) env-mapping))))
+   (let [credentials (map-values #(System/getenv %) env-mapping)]
+     (assert (every? some? (vals credentials))
+             (str "Failed to read credentials from env; one of "
+                  (vals env-mapping) " could not be found."))
+     (map->AppCredentials credentials))))
 
 ;; user
 
@@ -85,7 +89,11 @@
                           :user-token        "ACCESS_TOKEN"
                           :user-token-secret "ACCESS_TOKEN_SECRET"}))
   ([env-mapping]
-   (map->UserCredentials (map-values #(System/getenv %) env-mapping))))
+   (let [credentials (map-values #(System/getenv %) env-mapping)]
+     (assert (every? some? (vals credentials))
+             (str "Failed to read credentials from env; one of "
+                  (vals env-mapping) " could not be found."))
+     (map->UserCredentials credentials))))
 
 ;; collection
 
