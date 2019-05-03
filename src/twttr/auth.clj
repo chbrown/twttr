@@ -54,10 +54,10 @@
 
 (defn env->AppCredentials
   "Create an AppCredentials instance from environment variables, defaulting to
-  CONSUMER_KEY and CONSUMER_SECRET"
+  TWITTER_CONSUMER_KEY and TWITTER_CONSUMER_SECRET"
   ([]
-   (env->AppCredentials {:consumer-key    "CONSUMER_KEY"
-                         :consumer-secret "CONSUMER_SECRET"}))
+   (env->AppCredentials {:consumer-key    "TWITTER_CONSUMER_KEY"
+                         :consumer-secret "TWITTER_CONSUMER_SECRET"}))
   ([env-mapping]
    (let [credentials (map-values #(System/getenv %) env-mapping)]
      (assert (every? some? (vals credentials))
@@ -82,12 +82,13 @@
 
 (defn env->UserCredentials
   "Create a UserCredentials instance from environment variables, defaulting to
-  CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, and ACCESS_TOKEN_SECRET"
+  TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN and
+  TWITTER_ACCESS_TOKEN_SECRET."
   ([]
-   (env->UserCredentials {:consumer-key      "CONSUMER_KEY"
-                          :consumer-secret   "CONSUMER_SECRET"
-                          :user-token        "ACCESS_TOKEN"
-                          :user-token-secret "ACCESS_TOKEN_SECRET"}))
+   (env->UserCredentials {:consumer-key      "TWITTER_CONSUMER_KEY"
+                          :consumer-secret   "TWITTER_CONSUMER_SECRET"
+                          :user-token        "TWITTER_ACCESS_TOKEN"
+                          :user-token-secret "TWITTER_ACCESS_TOKEN_SECRET"}))
   ([env-mapping]
    (let [credentials (map-values #(System/getenv %) env-mapping)]
      (assert (every? some? (vals credentials))
