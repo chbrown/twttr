@@ -180,9 +180,9 @@
 
  ;; Upload media
  ;; https://developer.twitter.com/en/docs/media/upload-media/api-reference
- {:path "/media/upload"          :request-method :post}
+ {:server-name "upload.twitter.com" :path "/media/upload"          :request-method :post}
  ; {:path "/media/upload"          :request-method :get}
- {:path "/media/metadata/create" :request-method :post}
+ {:server-name "upload.twitter.com" :path "/media/metadata/create" :request-method :post}
 
  ;; Trends
 
