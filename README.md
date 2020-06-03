@@ -1,6 +1,7 @@
 # twttr
 
 [![Clojars Project](https://img.shields.io/clojars/v/twttr.svg)](https://clojars.org/twttr)
+[![cljdoc version badge](https://cljdoc.org/badge/twttr)](https://cljdoc.org/d/twttr)
 [![Travis CI build status](https://travis-ci.org/chbrown/twttr.svg?branch=master)](https://travis-ci.org/chbrown/twttr)
 [![Coverage status on Coveralls](https://coveralls.io/repos/github/chbrown/twttr/badge.svg?branch=master)](https://coveralls.io/github/chbrown/twttr?branch=master)
 
@@ -16,11 +17,6 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 ```edn
 [twttr "3.2.3"]
 ```
-
-
-## Documentation
-
-[Auto-generated Codox pages](https://chbrown.github.io/twttr/master/)
 
 
 ## Example
