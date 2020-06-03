@@ -14,7 +14,7 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 `twttr` is on [Clojars](https://clojars.org/twttr):
 
 ```edn
-[twttr "3.2.2"]
+[twttr "3.2.3"]
 ```
 
 
