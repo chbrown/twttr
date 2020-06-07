@@ -19,9 +19,22 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 ```
 
 
-## Example
+## Getting started
+
+Assuming you've got your OAuth credentials in hand ([procuring them](https://developer.twitter.com/docs/basics/authentication) is outside the scope of this library),
+the easiest way to use them in your Clojure project is via environment variables:
+
+```sh
+export CONSUMER_KEY=l4VAFAKEFAKEFAKEpy7R7
+export CONSUMER_SECRET=dVnTimJtFAKEFAKEFAKEFAKEFAKEFAKEBVYnO91BR1G
+export ACCESS_TOKEN=195648015-OIHb87zuFAKEFAKEFAKEFAKEFAKEFAKEb5aLUMYo
+export ACCESS_TOKEN_SECRET=jsVg1HFAKEFAKEFAKEFAKEFAKEFAKE4yfOLC5cXA9fcXr
+```
+
+And then (in the same shell session!) run `lein repl` or whatever you're using to kick off your Clojure code:
 
 ```clojure
+; save this to `dev/user.clj` in your project
 (ns user
   (:require [twttr.api :as api]
             [twttr.auth :refer [env->UserCredentials]]))
@@ -57,14 +70,7 @@ Twitter API client for Clojure, using [`aleph`](https://github.com/ztellman/alep
 
 ## Testing
 
-The tests require that credentials be provided via environment variables with the following names:
-
-```sh
-export CONSUMER_KEY=l4VAFAKEFAKEFAKEpy7R7
-export CONSUMER_SECRET=dVnTimJtFAKEFAKEFAKEFAKEFAKEFAKEBVYnO91BR1G
-export ACCESS_TOKEN=195648015-OIHb87zuFAKEFAKEFAKEFAKEFAKEFAKEb5aLUMYo
-export ACCESS_TOKEN_SECRET=jsVg1HFAKEFAKEFAKEFAKEFAKEFAKE4yfOLC5cXA9fcXr
-```
+The tests require that credentials be provided via environment variables as described [above](#getting-started).
 
 Then run `lein test`, which can take a minute since many of the tests involve calling the Twitter API and waiting for an appropriate response. If all tests completed successfully, the test output will end with a message like:
 
