@@ -1,6 +1,6 @@
 language: clojure
 jdk:
-  - oraclejdk8
+  - openjdk8
 lein: 2.8.1
 script:
   - lein do clean, test, cloverage --coveralls
