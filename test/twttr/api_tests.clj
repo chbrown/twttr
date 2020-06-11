@@ -61,11 +61,7 @@
     (is (http-ok? (users-show user-credentials :params {:user_id user-id})))
     (is (http-ok? (users-show app-credentials :params {:user_id user-id})))
     (is (http-ok? (users-lookup user-credentials :params {:user_id user-id})))
-    (is (http-ok? (users-lookup app-credentials :params {:user_id user-id})))
-    (is (http-ok? (users-suggestions user-credentials :params {:q "john smith"})))
-    (is (http-ok? (users-suggestions app-credentials :params {:q "john smith"})))
-    (is (http-ok? (users-suggestions-slug user-credentials :params {:slug "sports"})))
-    (is (http-ok? (users-suggestions-slug-members user-credentials :params {:slug "sports"})))))
+    (is (http-ok? (users-lookup app-credentials :params {:user_id user-id})))))
 
 (deftest test-trends
   (is (http-ok? (trends-place user-credentials :params {:id 1})))

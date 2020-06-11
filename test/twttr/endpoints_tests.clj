@@ -66,10 +66,7 @@
             "/users/lookup"
             "/users/profile_banner"
             "/users/search"
-            "/users/show"
-            "/users/suggestions"
-            "/users/suggestions/:slug"
-            "/users/suggestions/:slug/members"]
+            "/users/show"]
    :post   ["/account/remove_profile_banner"
             "/account/settings"
             "/account/update_profile"

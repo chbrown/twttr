@@ -73,9 +73,6 @@
  {:path "/users/lookup"}
  {:path "/users/search"}
  {:path "/users/show"}
- {:path "/users/suggestions"}
- {:path "/users/suggestions/:slug"}
- {:path "/users/suggestions/:slug/members"}
  {:path "/friendships/create"  :request-method :post}
  {:path "/friendships/destroy" :request-method :post}
  {:path "/friendships/update"  :request-method :post}
