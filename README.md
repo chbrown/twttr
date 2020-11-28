@@ -43,6 +43,10 @@ And then (in the same shell session!) run `lein repl` or whatever you're using t
 ; CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, and ACCESS_TOKEN_SECRET
 (def creds (env->UserCredentials))
 
+; or read credentials from map
+(def creds (twttr.auth/map->AppCredentials {:consumer-key    "xxx"
+                                            :consumer-secret "yyy"))
+
 ; the "https://api.twitter.com/1.1/users/show.json" Resource URL
 ; becomes the "users-show" function
 (api/users-show creds :params {:screen_name "jack"})
